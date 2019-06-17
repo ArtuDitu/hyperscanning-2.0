@@ -1,0 +1,19 @@
+env_name: hyper-2.0_env
+channels:
+  - nodefaults
+dependencies:
+  - cycler==0.10.0
+  - kiwisolver==1.1.0
+  - matplotlib==3.0.3
+  - numpy==1.16.4
+  - pandas==0.24.2
+  - pyparsing==2.4.0
+  - python-dateutil==2.8.0
+  - pytz==2019.1
+  - six==1.12.0
+  - pip==19.1.1
+  - pip:
+    - mne==0.18.2
+    - mne-bids==0.2
+    - scipy==1.3.0
+prefix: /Users/MT/anaconda3/envs/hyper-2.0_env
