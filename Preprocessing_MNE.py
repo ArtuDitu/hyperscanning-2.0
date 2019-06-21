@@ -27,8 +27,7 @@ from mne.datasets import sample
 # set current working directory
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0')
 
-eeglab_montage = '/net/home/student/m/mtiessen/link_hyperscanning/M_tools/eeglab14_1_2b/plugins/dipfit2.3/standard_BESA/standard-10-5-cap385.elp'
-mne_montage = mne.channels.read_montage(kind = 'standard_1005') #path = '~/.virtualenvs/hyper-2.0_env/lib/python3.5/site-packages/mne/channels/data/montages'
+
 
 raw = mne.io.read_raw_cnt(input_fname = sample, montage = mne_montage) # '/home/student/m/mtiessen/link_hyperscanning/EEG_data/sub202/sub202.cnt'
 write_raw_bids(raw, 'sub-01_ses-01_run-05', output_path='./bids_dataset')

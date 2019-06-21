@@ -50,10 +50,10 @@ def _get_info(eeg, montage, eog=()):
     info = _empty_info(sfreq=eeg.get_sample_frequency())
 
     # add the ch_names and info['chs'][idx]['loc']
-    
+
     ch_names =[eeg.get_channel(i)[0] for i in range(eeg.get_channel_count())]
     print ch_names
-        
+
     #elif isinstance(montage, string_types):
     #    path = op.dirname(montage)
     #else:  # if eeg.chanlocs is empty, we still need default chan names
@@ -86,7 +86,7 @@ def read_raw_antcnt(input_fname, montage=None, eog=(), event_id=None,
     Parameters
     ----------
     input_fname : str
-        Path to the .cnt file. 
+        Path to the .cnt file.
     montage : str | None | instance of montage
         Path or instance of montage containing electrode positions.
         If None, sensor locations are (0,0,0). See the documentation of
@@ -121,7 +121,7 @@ def read_raw_antcnt(input_fname, montage=None, eog=(), event_id=None,
         separate binary file.
     verbose : bool | str | int | None
         If not None, override default verbose level (see mne.verbose).
-  
+
     Returns
     -------
     raw : Instance of RawANTCNT
@@ -180,7 +180,7 @@ class RawANTCNT(BaseRaw):
         drive (slower, requires less memory).
     verbose : bool | str | int | None
         If not None, override default verbose level (see mne.verbose).
- 
+
     Returns
     -------
     raw : Instance of RawANTCNT
@@ -202,7 +202,7 @@ class RawANTCNT(BaseRaw):
         import libeep
         #basedir = op.dirname(input_fname)
         eeg= libeep.read_cnt(input_fname)
-        
+
         last_samps = [eeg.get_sample_count() - 1]
         info = _get_info(eeg, montage, eog=eog)
 
@@ -219,24 +219,24 @@ class RawANTCNT(BaseRaw):
         self._create_event_ch(events, n_samples=eeg.get_sample_count())
 
         # read the data
-    
+
         if preload is False or isinstance(preload, string_types):
             warn('Data will be preloaded. preload=False or a string '
                  'preload is not supported when the data is stored in '
                  'the .cnt file')
         # don't know how to implement preload = F
-        
+
         n_chan = eeg.get_channel_count()
         n_times = eeg.get_sample_count()
-        
+
         data = np.empty((n_chan+1, n_times), dtype=np.double)
         from numpy import asarray
         x = asarray(eeg.get_samples(0,n_times))
-        x.shape  = (n_times,n_chan) 
-        
+        x.shape  = (n_times,n_chan)
+
         data[:-1] = x.transpose()
-        
-        
+
+
         data *= CAL
         data[-1] = self._event_ch
         super(RawANTCNT, self).__init__(
@@ -270,16 +270,16 @@ def _read_antcnt_events(eeg, event_id=None, event_id_func='strip_to_integer'):
             event_id_func = _strip_to_integer
         if event_id is None:
             event_id = dict()
-    
+
         types = [eeg.get_trigger(i)[0] for i in range(eeg.get_trigger_count())]
         latencies= [eeg.get_trigger(i)[1] for i in range(eeg.get_trigger_count())]
-            
-            
-        
+
+
+
         if len(types) < 1:  # if there are 0 events, we can exit here
             logger.info('No events found, returning empty stim channel ...')
             return np.zeros((0, 3))
-    
+
         not_in_event_id = set(x for x in types if x not in event_id)
         not_purely_numeric = set(x for x in not_in_event_id if not x.isdigit())
         no_numbers = set([x for x in not_purely_numeric
@@ -299,7 +299,7 @@ def _read_antcnt_events(eeg, event_id=None, event_id_func='strip_to_integer'):
                            "{0}, {1} in total")
                 warn(basewarn + intwarn.format(list(have_integers)[:5],
                                                n_have_integers))
-    
+
         events = list()
         for tt, latency in zip(types, latencies):
             try:  # look up the event in event_id and if not, try event_id_func
@@ -307,7 +307,7 @@ def _read_antcnt_events(eeg, event_id=None, event_id_func='strip_to_integer'):
                 events.append([int(latency), 1, event_code])
             except (ValueError, TypeError):  # if event_id_func fails
                 pass  # We're already raising warnings above, so we just drop
-    
+
         if len(events) < len(types):
             missings = len(types) - len(events)
             msg = ("{0}/{1} event codes could not be mapped to integers. Use "
@@ -316,11 +316,10 @@ def _read_antcnt_events(eeg, event_id=None, event_id_func='strip_to_integer'):
             if len(events) < 1:
                 warn("As is, the trigger channel will consist entirely of zeros.")
                 return np.zeros((0, 3))
-    
+
         return np.asarray(events)
-    
-    
+
+
 def _strip_to_integer(trigger):
     """Return only the integer part of a string."""
     return int("".join([x for x in trigger if x.isdigit()]))
-
