@@ -29,18 +29,27 @@ from mne_bids.utils import print_dir_tree
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/load_CNT/fif_files/')
 
 # make directory to save the data in BIDS-format
-home = '~'
-mne_dir = os.path.join(home,'/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/','mne_data')
+home = os.path.expanduser('~')
+mne_dir = os.path.join(home,'/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data')
 if not os.path.exists(mne_dir):
     os.makedirs(mne_dir)
 
-# visualize data structure
+# visualize data structure of raw files
 print_dir_tree('/home/student/m/mtiessen/link_hyperscanning/hyperscanning-2.0/load_CNT/fif_files')
 
 for i in ['203']:
     # Load the mne compatible data-files
     raw = mne.io.read_raw_fif(fname = 'sub%s.fif' %(i), preload = False)
 
+# display the dictionary of the raw_file
+print(raw.info)
+print(len(raw.ch_names))
+# pd.set_option('display.max_rows', 100)
+ch_list = pd.DataFrame({'channel_names':raw.ch_names})
+print(ch_list.to_string())
+
+# TEST: extract specific data
+sub2 = raw.copy().get_data(picks = [0,71])
 
 print(make_bids_basename.__doc__)
 i = '203'

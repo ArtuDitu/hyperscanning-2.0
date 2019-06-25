@@ -26,8 +26,8 @@ os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/')
 # mne.sys_info()
 
 # eeglab_montage = '/net/home/student/m/mtiessen/link_hyperscanning/M_tools/eeglab14_1_2b/plugins/dipfit2.3/standard_BESA/standard-10-5-cap385.elp'
-# mne_montage = mne.channels.read_montage(kind = 'standard_1005') #path = '~/.virtualenvs/hyper-2.0_env/lib/python3.5/site-packages/mne/channels/data/montages'
-
+mne_montage = mne.channels.read_montage(kind = 'standard_1005') #path = '~/.virtualenvs/hyper-2.0_env/lib/python3.5/site-packages/mne/channels/data/montages'
+# help( mne.channels.read_montage)
 # load the .cnt data with read_antcnt.py script
 raw = read_antcnt.read_raw_antcnt('/home/student/m/mtiessen/link_hyperscanning/EEG_data/sub203/sub203.cnt')
 # apply specific NBP channel settings
