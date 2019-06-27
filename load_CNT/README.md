@@ -10,8 +10,8 @@ The libeep toolbox is from ANT, you can find the source and try to compile yours
 ### How-To:
 ``` python
 import read_antcnt
-raw = read_antcnt('filename.cnt')
-raw.plot()
+raw = read_antcnt.read_raw_antcnt('filename.cnt')
+raw.save('filename.fif', overwrite=False)
 ```
 ### Custom NBP-Things
 In order to set the AUX/BIP channels as 'misc' use the following code:
