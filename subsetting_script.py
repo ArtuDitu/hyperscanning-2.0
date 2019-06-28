@@ -24,7 +24,7 @@ def sub2(raw):
     raw_temp = raw.copy().load_data().pick(picks=channel_indices)
     return raw_temp
 
-# channels 73-144 are generated from amplifier 2; thus it must be sub1
+# channels 72-144 are generated from amplifier 2; thus it must be sub1
 # @classmethod
 def sub1(raw):
     raw.info['subject_info'] = 'sub1'
