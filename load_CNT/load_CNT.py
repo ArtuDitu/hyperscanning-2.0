@@ -7,9 +7,10 @@ Created on June 19, 2019
 # @author: mtiessen
 # Mail: mtiessen@uos.de
 """
-
+#
 # Since code was written in Python 2.x, use Python 2 kernel to run the code
 # with virtual environment "load_cnt"
+#
 
 import os, sys
 # make sure "read_antcnt.py" is in your pythonpath
@@ -22,15 +23,21 @@ import mne
 import read_antcnt
 # from matplotlib import pyplot as plt
 
-# set current working directory
-# os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/')
+
+#
 # make directory to save the raw data in MNE_BIDS compatible 'sourcedata' folder
+#
 raw_files = os.path.join(home,'/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata')
 if not os.path.exists(raw_files):
     os.makedirs(raw_files)
 # mne.sys_info()
 
+# set current working directory
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/')
+
+#
+# iterate over raw eeg-files of each subject and save in MNE compatible .fif format
+#
 sub_list = ['203','204','205','206','207','208','209','211','212']
 for i in (sub_list):
     path_to_cnt = '/net/store/nbp/projects/hyperscanning/EEG_data/sub%s/sub%s.cnt' %(i,i)
