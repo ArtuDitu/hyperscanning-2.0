@@ -22,6 +22,7 @@ from mne.datasets import sample
 from mne_bids.utils import print_dir_tree
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0')
 import subsetting_script
+from datetime import datetime
 
 # set current working directory
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata')
@@ -62,7 +63,45 @@ def add_info(raw):
     # raw.plot(start = 1103, duration = 3)
     return raw
 
-# print(mne.io.Raw.save.__doc__)
+# def add_info2(raw):
+#     # ERROR CAUSED BY THIS FUNCTION - TODO:
+#     # 1. I think I need to use "mne.events_from_annotations" to create events
+#     # 2. therefore, I need annotations already
+#     # 3. Maybe create annotations from 203.trg file via mne.read_annotations()
+#    with open('/net/store/nbp/projects/hyperscanning/EEG_data/sub203/sub203.trg', mode = 'r', encoding = 'utf-8-sig') as file:
+#         print(file.read())
+#         for line in file:
+#             temp = line.strip().split(' ')
+#     annot = mne.read_annotations(fname = file, sfreq = raw.info['sfreq'])
+
+#     events = mne.find_events(raw, stim_channel = 'STI 014')
+#     # raw.info['events'] = events
+#
+#     # CREATE ANNOTATIONS FROM EVENTS: To visualize the events + event-description in the data
+#     # Read in trigger description txt-file and create mapping dict (e.g. trigger 49 = Trial end)
+#     mapping = dict()
+#     with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
+#         #print(file.read())
+#         for line in file:
+#             temp = line.strip().split('. ')
+#             mapping.update({int(temp[0]) : temp[1]})
+#
+#     # for each trigger-key, map the corresponding trigger definition
+#     descriptions = [mapping[event_id] for event_id in events[:, 2]]
+#     # add annotations to eeg-struct
+#     srate = raw.info['sfreq']
+#     onsets = events[:,0] / srate
+#     durations = np.zeros_like(onsets) # assuming instantaneous events
+#     # mne.Annotations input:
+#     # 1. supply the onset timestamps of each event (in sec.)
+#     # 2. the duration of event (set to 0sec.)
+#     # 3. the event description
+#     # 4. the onset of first sample
+#     annot = mne.Annotations(onsets, durations, descriptions, orig_time = None)
+#     raw.set_annotations(annot)
+#     # raw.plot(start = 1103, duration = 3)
+#     return raw
+
 # TEST: Try to save and reload the data-subsets bc in order to use 'write_raw_bids',
 # the data must not be loaded, i.e. preload = False
 def save_and_reload(sub_raw):
@@ -87,20 +126,30 @@ if __name__=='__main__':
     # do for each subject
     for subject in ['203']:
         # LOAD THE MNE-COMPATIBLE DATA-FILES
-        raw = mne.io.read_raw_fif(fname = mne_dir+'sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject,subject), preload = False)
+        fname = mne_dir+'sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject,subject)
+        raw = mne.io.read_raw_fif(fname = fname, preload = False)
         # add additional information to the data-struct
         raw = add_info(raw)
 
+        # print(mne.io.Raw.save.__doc__)
+        # raw.save(mne_dir+'temp_saving_subsets/sub2_raw.fif', overwrite = True)
+        # date = raw.info['meas_date']
+        # raw.annotations
         # SUBSET THE DATA-STRUCT
         sub2_raw = subsetting_script.sub2(raw)
         # sub2_raw.info['ch_names']
         sub1_raw = subsetting_script.sub1(raw)
-        date = sub1_raw.info['meas_date']
-        sub1_raw.info['subject_info']
+
+
         # Reload subsets with preload = False which is necessary condition
         # in order to run "write_raw_bids" command
-        sub2_raw = save_and_reload(sub2_raw)
-        sub1_raw = save_and_reload(sub1_raw)
+        # sub2_raw = save_and_reload(sub2_raw)
+        # sub1_raw = save_and_reload(sub1_raw)
+
+        # # TEST: Load sub_raw from "mne_dir+'temp_saving_subsets'" with preload = False
+        # path_to_sub2 = mne_dir+'temp_saving_subsets/sub2.fif'
+        # sub2_raw = mne.io.read_raw_fif(fname = path_to_sub2, preload = False)
+
 
         ######################################################
         # STEP 2: SAVE DATA IN BIDS-FORMAT

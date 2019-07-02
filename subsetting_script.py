@@ -22,10 +22,14 @@ def sub2(raw):
     # select correct subset of channels
     channel_indices = list(np.arange(0,72, 1))
     raw_temp = raw.copy().load_data().pick(picks=channel_indices)
+
     # TEST
-    # Only keep certain EEG channels
-    # eeg_indices = mne.info['channel_names'][0:72]
-    # reduced_info = mne.pick_info(info, eeg_indices)
+    # home = os.path.expanduser('~')
+    # mne_dir = os.path.join(home,'/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/')
+    # eeg_indices = raw.info['ch_names'][0:72]
+    # path_to_sub2 = mne_dir+'temp_saving_subsets/sub2.fif'
+    # raw.save(path_to_sub2, picks = eeg_indices, overwrite = True)
+    # raw_temp = mne.io.read_raw_fif(fname = path_to_sub2, preload = False)
 
     return raw_temp
 
