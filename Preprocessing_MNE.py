@@ -62,18 +62,18 @@ def add_info(raw):
     # raw.plot(start = 1103, duration = 3)
     return raw
 
-def save_and_reload(sub2_raw, sub1_raw):
-    # TEST: Try to save and reload the subsets bc in order to write_raw_bids,
-    # the data must not be loaded, i.e. preload = False
+# print(mne.io.Raw.save.__doc__)
+# TEST: Try to save and reload the data-subsets bc in order to use 'write_raw_bids',
+# the data must not be loaded, i.e. preload = False
+def save_and_reload(sub_raw):
     if not os.path.exists(mne_dir+'temp_saving_subsets'):
         os.makedirs(mne_dir+'temp_saving_subsets')
-    for i in (['sub2_raw', 'sub1_raw']):
-        eval(i).save(mne_dir+'temp_saving_subsets/{}.fif'.format(i), overwrite=True)
-        # TEST: Load sub_raw from "mne_dir+'temp_saving_subsets'" with preload = False
-
-    sub2_raw = mne.io.read_raw_fif(fname = mne_dir+'temp_saving_subsets/sub2_raw.fif', preload = False)
-    sub1_raw = mne.io.read_raw_fif(fname = mne_dir+'temp_saving_subsets/sub1_raw.fif', preload = False)
-    return sub2_raw, sub1_raw
+    id = sub_raw.info['subject_info']
+    path_to_temp = mne_dir+'temp_saving_subsets/{:s}.fif'.format(id)
+    sub_raw.save(path_to_temp, overwrite=True)
+    # TEST: Load sub_raw from "mne_dir+'temp_saving_subsets'" with preload = False
+    sub_raw = mne.io.read_raw_fif(fname = path_to_temp, preload = False)
+    return sub_raw
 
 
 if __name__=='__main__':
@@ -88,17 +88,19 @@ if __name__=='__main__':
     for subject in ['203']:
         # LOAD THE MNE-COMPATIBLE DATA-FILES
         raw = mne.io.read_raw_fif(fname = mne_dir+'sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject,subject), preload = False)
-        # add additional information
+        # add additional information to the data-struct
         raw = add_info(raw)
 
         # SUBSET THE DATA-STRUCT
         sub2_raw = subsetting_script.sub2(raw)
         # sub2_raw.info['ch_names']
         sub1_raw = subsetting_script.sub1(raw)
-        sub1_raw.info['ch_names']
+        date = sub1_raw.info['meas_date']
         sub1_raw.info['subject_info']
-        sub2_raw, sub1_raw = save_and_reload(sub2_raw, sub1_raw)
-
+        # Reload subsets with preload = False which is necessary condition
+        # in order to run "write_raw_bids" command
+        sub2_raw = save_and_reload(sub2_raw)
+        sub1_raw = save_and_reload(sub1_raw)
 
         ######################################################
         # STEP 2: SAVE DATA IN BIDS-FORMAT
@@ -111,24 +113,27 @@ if __name__=='__main__':
             subject = '203'
             # subset = sub2_raw
             # print(subset)
-            subset = subset(preload = False)
+
+            # CREATE subdirectory for each subject-pair
             mne_subdir = mne_dir+'sub-{}/'.format(subject)
             if not os.path.exists(mne_subdir):
                 os.makedirs(mne_subdir)
-            # DEFINE BIDS-COMPATIBLE PARAMETERS
-            if subset == sub2_raw:
+
+            # DEFINE BIDS-compatible parameters
+            if subset.info['subject_id'] == 'sub2':
                 subject_id = subject+'|2'
             else:
-                subject_id = subject='|1'
+                subject_id = subject+'|1'
             task = 'hyper'
             raw_file = subset
             output_path = os.path.join(mne_subdir, 'sub-{}'.format(subject_id))
             events, event_id = mne.events_from_annotations(subset)
-            # trial_type = {}
-
             bids_basename = make_bids_basename(subject = subject_id, task = task)
+
+            # CREATE the files for each subject in accordance to BIDS-format
             write_raw_bids(raw_file, bids_basename, output_path = output_path, event_id = event_id, events_data = events, overwrite = True)
             print_dir_tree(output_path)
+
 subset.info
     sub2_raw.info
     print(make_bids_basename.__doc__)

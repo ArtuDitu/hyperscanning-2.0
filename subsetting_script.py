@@ -22,6 +22,11 @@ def sub2(raw):
     # select correct subset of channels
     channel_indices = list(np.arange(0,72, 1))
     raw_temp = raw.copy().load_data().pick(picks=channel_indices)
+    # TEST
+    # Only keep certain EEG channels
+    # eeg_indices = mne.info['channel_names'][0:72]
+    # reduced_info = mne.pick_info(info, eeg_indices)
+
     return raw_temp
 
 # channels 73-144 are generated from amplifier 2; thus it must be sub1
