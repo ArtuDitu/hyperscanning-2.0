@@ -18,10 +18,13 @@ import pandas as pd
 
 # channels 0-72 is generated from amplifier 1; thus it must be sub2
 # @classmethod
+
+# Returns a dict with subject-specific information (extracts from spreadsheet_subjects)
 def subject_info(subject, amplifier):
-    # help(pd.read_csv)
-    subject = 203
-    amplifier = 'Amp 2'
+    # DEBUG-Variables
+    # subject = 203
+    # amplifier = 'Amp 1'
+
     # READ in subject information
     info_csv = pd.read_csv('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/spreadsheet_subjects.csv', na_values = ['\\N'], skipinitialspace = True)
     # Code gender 'male' = 1 and 'female' = 2
@@ -34,13 +37,25 @@ def subject_info(subject, amplifier):
     # Select only the row of interest
     current_sub = info_csv[info_csv['Which amplifier?'] == amplifier][info_csv['Experiment No.'] == subject]
     # Extract the values
+    if amplifier == 'Amp 1':
+        his_id = '%s_sub2' %(subject)
+    else:
+        his_id = '%s_sub1' %(subject)
     last_name = current_sub.iloc[0]['Name'].split(' ',maxsplit = 1)[-1]
     first_name = current_sub.iloc[0]['Name'].split(' ')[0]
     sex = current_sub.iloc[0]['gender']
     handness = current_sub.iloc[0]['handness']
+    
     # Create the dictionary with the values
-    subject_dict = dict({'id':subject, 'his_id':'%s_sub2'%(subject), 'last_name':last_name, 'first_name':first_name, 'middle_name':None, 'birthday':None, 'sex':sex, 'hand':handness})
-    # raw.info['subject_info'] = subject_dict
+    subject_dict = dict(
+                    {'id':subject,
+                    'his_id':his_id,
+                    'last_name':last_name,
+                    'first_name':first_name,
+                    'middle_name':None,
+                    'birthday':None,
+                    'sex':sex,
+                    'hand':handness})
 
     return subject_dict
 
@@ -56,7 +71,8 @@ def sub2(raw, subject):
     # raw_temp = raw.copy().load_data().pick(picks=channel_indices)
     # return raw_temp
 
-    raw.info['subject_info'] = subject_info(subject, 'Amp 1')
+    # add subject-specific information to the info struct
+    raw.info['subject_info'] = subject_info(int(subject), 'Amp 1')
 
     # CREATE temporary path to save file
     home = os.path.expanduser('~')
@@ -73,7 +89,8 @@ def sub2(raw, subject):
 # channels 73-144 are generated from amplifier 2; thus it must be sub1
 # @classmethod
 def sub1(raw, subject):
-    raw.info['subject_info'] = subject_info(subject, 'Amp 2')
+    # add subject-specific information to the info struct
+    raw.info['subject_info'] = subject_info(int(subject), 'Amp 2')
     # select correct subset of channels and save channel names for renaming
     channel_names_new = raw.info['ch_names'][0:72]
     channel_names_old = raw.info['ch_names'][72:144]

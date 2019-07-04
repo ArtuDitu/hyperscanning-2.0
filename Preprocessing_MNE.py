@@ -30,6 +30,8 @@ os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourc
 home = os.path.expanduser('~')
 mne_dir = os.path.join(home,'/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/')
 
+# %%
+
 # ADDING ADDITIONAL INFORMATION TO THE .INFO-DICT OF THE EEG-FILE
 # I.e., adding the events from the STIM-channel and creating annotations that
 # will be visible in the raw data (as color-coded triggers with event description)
@@ -63,6 +65,7 @@ def add_info(raw):
     # raw.plot(start = 1103, duration = 3)
     return raw
 
+# %%
 # # TEST: Try to save and reload the data-subsets bc in order to use 'write_raw_bids',
 # # the data must not be loaded, i.e. preload = False
 # def save_and_reload(sub_raw):
@@ -94,10 +97,12 @@ if __name__=='__main__':
 
         # SUBSET THE DATA-STRUCT
         sub2_raw = subsetting_script.sub2(raw, subject)
-        sub2_raw.info['ch_names']
+        sub2_raw.info['subject_info']
         sub2_raw.info
         sub1_raw = subsetting_script.sub1(raw, subject)
+        sub1_raw.info['subject_info']
         sub1_raw.info
+        # %%
 
 
         ######################################################
