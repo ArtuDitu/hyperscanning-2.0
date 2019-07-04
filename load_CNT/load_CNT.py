@@ -21,7 +21,6 @@ import libeep
 import numpy as np
 import mne
 import read_antcnt
-import pybv
 # from matplotlib import pyplot as plt
 
 

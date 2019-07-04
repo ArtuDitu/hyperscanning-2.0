@@ -6,7 +6,7 @@ import os, sys
 import mne
 import numpy as np
 import pandas as pd
-
+from pybv import write_brainvision
 
 # class Subset:
 #
@@ -15,8 +15,6 @@ import pandas as pd
 #
 #     def __repr__(self):
 #         return (self.raw) # 'subset-{} successfully created!'.format(self.raw.info['subject_info'])
-
-# channels 0-72 is generated from amplifier 1; thus it must be sub2
 # @classmethod
 
 # Returns a dict with subject-specific information (extracts from spreadsheet_subjects)
@@ -45,7 +43,7 @@ def subject_info(subject, amplifier):
     first_name = current_sub.iloc[0]['Name'].split(' ')[0]
     sex = current_sub.iloc[0]['gender']
     handness = current_sub.iloc[0]['handness']
-    
+
     # Create the dictionary with the values
     subject_dict = dict(
                     {'id':subject,
@@ -59,17 +57,12 @@ def subject_info(subject, amplifier):
 
     return subject_dict
 
-
+# channels 0-72 is generated from amplifier 1; thus it must be sub2
 def sub2(raw, subject):
     # DEBUG-Variables
     # subject = 203
-    # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject,subject)
+    # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sub-{}/sub-{}|2/eeg/sub-{}|2_task-hyper_eeg.fif'.format(subject, subject, subject)
     # raw = mne.io.read_raw_fif(fname = fname, preload = False)
-
-    # select correct subset of channels
-    # channel_indices = list(np.arange(0,72, 1))
-    # raw_temp = raw.copy().load_data().pick(picks=channel_indices)
-    # return raw_temp
 
     # add subject-specific information to the info struct
     raw.info['subject_info'] = subject_info(int(subject), 'Amp 1')
@@ -84,6 +77,7 @@ def sub2(raw, subject):
     raw.save(path_to_sub2, picks = eeg_indices, overwrite = True)
     # Reload file while preload=False (needed to further operate on file in main-script)
     raw_temp = mne.io.read_raw_fif(fname = path_to_sub2, preload = False)
+
     return raw_temp
 
 # channels 73-144 are generated from amplifier 2; thus it must be sub1
@@ -106,3 +100,26 @@ def sub1(raw, subject):
     # Rename the channels
     raw_temp.rename_channels(channel_mapping)
     return raw_temp
+
+
+    # TEST: writing and reading BrainVision file (this file format is widely used)
+    # help(pybv.write_brainvision)
+    # path_to_sub2 = mne_dir+'temp_saving_subsets/'
+    # raw_data, _ = raw[:]
+    # eeg_indices = raw.info['ch_names']
+    # events, _ = mne.events_from_annotations(raw)
+    # # deletes second column in events
+    # events_formatted = np.delete(np.array(events),1,1)
+    # pybv.write_brainvision(
+    #             data = raw_data,
+    #             sfreq = raw.info['sfreq'],
+    #             ch_names = eeg_indices,
+    #             fname_base = 'sub2',
+    #             folder_out = path_to_sub2,
+    #             events = events_formatted)
+    #
+    # print(mne.io.read_raw_brainvision.__doc__)
+    # raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub2+'sub2.vhdr', preload = False)
+    # annot = mne.read_annotations(path_to_sub2+'sub2.vmrk')
+    # raw_bv.set_annotations(annot)
+    # raw_bv.annotations

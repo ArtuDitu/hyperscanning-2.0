@@ -22,8 +22,7 @@ from mne.datasets import sample
 from mne_bids.utils import print_dir_tree
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0')
 import subsetting_script
-from datetime import datetime
-
+import pybv
 # set current working directory
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata')
 # make directory to save the data in BIDS-format
