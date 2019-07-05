@@ -22,7 +22,7 @@ from mne.datasets import sample
 from mne_bids.utils import print_dir_tree
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0')
 import subsetting_script
-import pybv
+
 # set current working directory
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata')
 # make directory to save the data in BIDS-format
@@ -117,26 +117,27 @@ if __name__=='__main__':
             # print(subset)
 
             # CREATE subdirectory for each subject-pair
-            mne_subdir = mne_dir+'sub-{}/'.format(subject)
-            if not os.path.exists(mne_subdir):
-                os.makedirs(mne_subdir)
+            # mne_subdir = mne_dir+'sub-{}/'.format(subject)
+            # if not os.path.exists(mne_subdir):
+            #     os.makedirs(mne_subdir)
 
             # DEFINE BIDS-compatible parameters
-            # if subset.info['subject_id'] == 'sub2':
-            #     subject_id = subject+'|2'
-            # else:
-            #     subject_id = subject+'|1'
-            subject_id = subject+'|1'
+            if subset.info['subject_info']['his_id'] == subject+'_sub2':
+                player = '02'
+            else:
+                player = '01'
+            subject_id = subject
             task = 'hyper'
             raw_file = subset
             # output_path = os.path.join(mne_subdir, 'sub-{}'.format(subject_id))
             events, event_id = mne.events_from_annotations(subset)
-            bids_basename = make_bids_basename(subject = subject_id, task = task)
+            bids_basename = make_bids_basename(subject = subject_id, session = player, task = task)
 
             # CREATE the files for each subject in accordance to BIDS-format
-            write_raw_bids(raw_file, bids_basename, output_path = mne_subdir, event_id = event_id, events_data = events, overwrite = True)
-            print_dir_tree(mne_subdir)
+            write_raw_bids(raw_file, bids_basename, output_path = mne_dir, event_id = event_id, events_data = events, overwrite = True)
+            print_dir_tree(mne_dir)
 
+# %%
 subset.info
     sub2_raw.info
     print(make_bids_basename.__doc__)

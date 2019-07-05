@@ -6,7 +6,6 @@ import os, sys
 import mne
 import numpy as np
 import pandas as pd
-from pybv import write_brainvision
 
 # class Subset:
 #
@@ -60,9 +59,9 @@ def subject_info(subject, amplifier):
 # channels 0-72 is generated from amplifier 1; thus it must be sub2
 def sub2(raw, subject):
     # DEBUG-Variables
-    # subject = 203
-    # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sub-{}/sub-{}|2/eeg/sub-{}|2_task-hyper_eeg.fif'.format(subject, subject, subject)
-    # raw = mne.io.read_raw_fif(fname = fname, preload = False)
+    subject = 203
+    fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sub-{}/sub-{}|2/eeg/sub-{}|2_task-hyper_eeg.fif'.format(subject, subject, subject)
+    raw = mne.io.read_raw_fif(fname = fname, preload = False)
 
     # add subject-specific information to the info struct
     raw.info['subject_info'] = subject_info(int(subject), 'Amp 1')
@@ -103,7 +102,9 @@ def sub1(raw, subject):
 
 
     # TEST: writing and reading BrainVision file (this file format is widely used)
+    # from pybv import write_brainvision
     # help(pybv.write_brainvision)
+    #
     # path_to_sub2 = mne_dir+'temp_saving_subsets/'
     # raw_data, _ = raw[:]
     # eeg_indices = raw.info['ch_names']
