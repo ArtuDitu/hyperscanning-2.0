@@ -16,7 +16,7 @@ import os, sys
 # make sure "read_antcnt.py" is in your pythonpath
 home = os.path.expanduser('~')
 sys.path.append('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/load_CNT/')
-print(sys.path)
+# print(sys.path)
 import libeep
 import numpy as np
 import mne
@@ -38,7 +38,7 @@ os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/')
 #
 # iterate over raw eeg-files of each subject and save in MNE compatible .fif format
 #
-sub_list = ['203','204','205','206','207','208','209','211','212']
+sub_list =  ['202','203','204','205','206','207','208','209','211','212']
 for i in (sub_list):
     path_to_cnt = '/net/store/nbp/projects/hyperscanning/EEG_data/sub%s/sub%s.cnt' %(i,i)
     # load the .cnt data with read_antcnt.py script
@@ -48,7 +48,7 @@ for i in (sub_list):
     # save mne data in .fif format
     if not os.path.exists(raw_files+'/sub-{:s}/eeg'.format(i)):
         os.makedirs(raw_files+'/sub-{:s}/eeg'.format(i))
-    path_to_fif = raw_files+'/sub-{:s}/eeg/sub-{:s}-task-hyper_eeg.fif'.format(i,i)
+    path_to_fif = raw_files+'/sub-{:s}/eeg/sub-{:s}_task-hyper_eeg.fif'.format(i,i)
     if os.path.exists(path_to_fif):
         pass
     else:

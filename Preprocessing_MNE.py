@@ -22,6 +22,7 @@ from mne.datasets import sample
 from mne_bids.utils import print_dir_tree
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0')
 import subsetting_script
+import pybv
 
 # set current working directory
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata')
@@ -36,7 +37,13 @@ mne_dir = os.path.join(home,'/net/store/nbp/projects/hyperscanning/hyperscanning
 # will be visible in the raw data (as color-coded triggers with event description)
 def add_info(raw):
     # CREATE EVENTS
-    events = mne.find_events(raw, stim_channel = 'STI 014')
+    # print(mne.find_events.__doc__)
+    try:
+        events = mne.find_events(raw, stim_channel = 'STI 014')
+    except ValueError as err:
+        print("ValueError: {}".format(err))
+        print("--> trying to decrease length of 'shortest_event' from default(2) to 1 sample.")
+        events = mne.find_events(raw, stim_channel = 'STI 014', shortest_event = 1)
     # raw.info['events'] = events
 
     # CREATE ANNOTATIONS FROM EVENTS: To visualize the events + event-description in the data
@@ -65,30 +72,17 @@ def add_info(raw):
     return raw
 
 # %%
-# # TEST: Try to save and reload the data-subsets bc in order to use 'write_raw_bids',
-# # the data must not be loaded, i.e. preload = False
-# def save_and_reload(sub_raw):
-#     if not os.path.exists(mne_dir+'temp_saving_subsets'):
-#         os.makedirs(mne_dir+'temp_saving_subsets')
-#     id = sub_raw.info['subject_info']
-#     path_to_temp = mne_dir+'temp_saving_subsets/{:s}.fif'.format(id)
-#     sub_raw.save(path_to_temp, overwrite=True)
-#     # TEST: Load sub_raw from "mne_dir+'temp_saving_subsets'" with preload = False
-#     sub_raw = mne.io.read_raw_fif(fname = path_to_temp, preload = False)
-#     return sub_raw
-
 
 if __name__=='__main__':
     #############################################
     # STEP ONE: Load data, split into two structs
     #############################################
-
     # visualize data structure of raw files
     # print_dir_tree('/home/student/m/mtiessen/link_hyperscanning/hyperscanning-2.0/mne_data')
 
     # do for each subject
-    for subject in ['203']:
-        # LOAD THE MNE-COMPATIBLE DATA-FILES
+    for subject in ['204']:
+        # LOAD THE MNE-COMPATIBLE RAW DATA-FILE(S)
         fname = mne_dir+'sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject,subject)
         raw = mne.io.read_raw_fif(fname = fname, preload = False)
         # add additional information to the data-struct
@@ -103,23 +97,17 @@ if __name__=='__main__':
         sub1_raw.info
         # %%
 
-
         ######################################################
         # STEP 2: SAVE DATA IN BIDS-FORMAT
         ######################################################
-        help(make_bids_basename)
-        help(write_raw_bids)
+        # help(make_bids_basename)
+        # help(write_raw_bids)
         # automatize process for each sub_file
         for subset in ([sub1_raw, sub2_raw]):
             # DEBUG-Variables
             # subject = '203'
             # subset = sub1_raw
             # print(subset)
-
-            # CREATE subdirectory for each subject-pair
-            # mne_subdir = mne_dir+'sub-{}/'.format(subject)
-            # if not os.path.exists(mne_subdir):
-            #     os.makedirs(mne_subdir)
 
             # DEFINE BIDS-compatible parameters
             if subset.info['subject_info']['his_id'] == subject+'_sub2':
@@ -128,22 +116,20 @@ if __name__=='__main__':
                 player = '01'
             subject_id = subject
             task = 'hyper'
-            raw_file = subset
-            # output_path = os.path.join(mne_subdir, 'sub-{}'.format(subject_id))
             events, event_id = mne.events_from_annotations(subset)
             bids_basename = make_bids_basename(subject = subject_id, session = player, task = task)
 
             # CREATE the files for each subject in accordance to BIDS-format
-            write_raw_bids(raw_file, bids_basename, output_path = mne_dir, event_id = event_id, events_data = events, overwrite = True)
-            print_dir_tree(mne_dir)
+            write_raw_bids(subset, bids_basename, output_path = mne_dir, event_id = event_id, events_data = events, overwrite = True)
+            # print_dir_tree(mne_dir)
 
 # %%
-subset.info
-    sub2_raw.info
-    print(make_bids_basename.__doc__)
-help(mne.events_from_annotations)
-
-test = raw.info['ch_names'][0:72]
+# subset.info
+# sub2_raw.info
+# print(make_bids_basename.__doc__)
+# help(mne.events_from_annotations)
+#
+# test = raw.info['ch_names'][0:72]
 
 
 # Give the sample rate
