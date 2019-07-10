@@ -124,6 +124,13 @@ if __name__=='__main__':
             # print_dir_tree(mne_dir)
 
 # %%
+
+################################################################
+# STEP 3: LOAD DATASET TO WORK WITH AND CREATE PREPROCESSING DIR
+################################################################
+# subj-pair = input("Select subject-pair to work on (e.g. '202'): ")
+
+
 # subset.info
 # sub2_raw.info
 # print(make_bids_basename.__doc__)
