@@ -74,6 +74,7 @@ def subject_info(subject, amplifier):
     return subject_dict
 
 
+
 # TEST: writing and reading BrainVision file (this file format is widely used)
 # from pybv import write_brainvision
 # help(pybv.write_brainvision)
@@ -107,7 +108,8 @@ def sub2(raw, subject):
                 ch_names = eeg_indices,
                 fname_base = 'sub2',
                 folder_out = path_to_sub,
-                events = events_formatted)
+                events = events_formatted,
+                scale_data = False)
 
     # Load brainvision data
     # print(mne.io.read_raw_brainvision.__doc__)
@@ -150,7 +152,8 @@ def sub1(raw, subject):
                 ch_names = eeg_indices,
                 fname_base = 'sub1',
                 folder_out = path_to_sub,
-                events = events_formatted)
+                events = events_formatted,
+                scale_data = False)
 
     # Load brainvision data
     # print(mne.io.read_raw_brainvision.__doc__)

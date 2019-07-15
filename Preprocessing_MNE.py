@@ -117,20 +117,54 @@ if __name__=='__main__':
             subject_id = subject
             task = 'hyper'
             events, event_id = mne.events_from_annotations(subset)
+
+            # CREATE the correct naming for the file (e.g. 'sub-202_ses-01_task-hyper')
+            # Subject 1 and 2 are distinguished via the session argument (ses-01 = subject-01; ses-02 = subject-02),
+            # since MNE-BIDS provides no hyperscanning compatible folder structure (afaik)
             bids_basename = make_bids_basename(subject = subject_id, session = player, task = task)
 
             # CREATE the files for each subject in accordance to BIDS-format
             write_raw_bids(subset, bids_basename, output_path = mne_dir, event_id = event_id, events_data = events, overwrite = True)
             # print_dir_tree(mne_dir)
 
+help(write_raw_bids)
 # %%
 
 ################################################################
 # STEP 3: LOAD DATASET TO WORK WITH AND CREATE PREPROCESSING DIR
 ################################################################
-# subj-pair = input("Select subject-pair to work on (e.g. '202'): ")
+
+# SELECT a subject-pair
+while True:
+    try:
+        subj_pair = input("Select subject-pair to work on (e.g. '202'): ")
+        assert subj_pair in ['202','203','204','205','206','207','208','209','211','212']
+        break
+    except AssertionError:
+        print("Subject-pair does not exist, try a different subject-pair.")
+
+# SELECT a participant_nr
+while True:
+    try:
+        participant_nr = input("Select participant to work on (either '01' or '02'): ")
+        assert participant_nr in ['01', '02']
+        break
+    except AssertionError:
+        print("You provided a wrong input! \nFor subject 1 type '01' \nFor subject 2 type '02'\n...")
 
 
+# SELECT the correct file based on user-input
+path_to_eeg = mne_dir+'sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
+bids_subname = make_bids_basename(subject = subj_pair, session = participant_nr, task = 'hyper')
+my_eeg = mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
+
+# my_eeg.info
+#
+# temp_dict = subsetting_script.subject_info(int(subj_pair), 'Amp 2')
+# mne.io.meas_info._merge_info(my_eeg.info, temp_dict, verbose = None)
+# help(mne.io.meas_info._merge_info)
+
+# %%
 # subset.info
 # sub2_raw.info
 # print(make_bids_basename.__doc__)
