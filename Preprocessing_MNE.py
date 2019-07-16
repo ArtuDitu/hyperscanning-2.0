@@ -17,7 +17,8 @@ import pandas as pd
 import numpy as np
 import mne
 # from mne import io
-from mne_bids import write_raw_bids, make_bids_basename
+from datetime import datetime
+from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne.datasets import sample
 from mne_bids.utils import print_dir_tree
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0')
@@ -95,6 +96,7 @@ if __name__=='__main__':
         sub1_raw = subsetting_script.sub1(raw, subject)
         sub1_raw.info['subject_info']
         sub1_raw.info
+
         # %%
 
         ######################################################
@@ -125,10 +127,11 @@ if __name__=='__main__':
 
             # CREATE the files for each subject in accordance to BIDS-format
             write_raw_bids(subset, bids_basename, output_path = mne_dir, event_id = event_id, events_data = events, overwrite = True)
-            # print_dir_tree(mne_dir)
 
-help(write_raw_bids)
-# %%
+            # dir = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0'
+            # print_dir_tree(dir)
+            # help(write_raw_bids)
+            # %%
 
 ################################################################
 # STEP 3: LOAD DATASET TO WORK WITH AND CREATE PREPROCESSING DIR
@@ -154,24 +157,21 @@ while True:
 
 
 # SELECT the correct file based on user-input
-path_to_eeg = mne_dir+'sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
 bids_subname = make_bids_basename(subject = subj_pair, session = participant_nr, task = 'hyper')
-my_eeg = mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
+my_eeg, _, _ = read_raw_bids(bids_fname = bids_subname + '_eeg.vhdr', bids_root = mne_dir)
+# Alternatively, load via read_raw_brainvision function
+# path_to_eeg = mne_dir+'sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
+# mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
 
-# my_eeg.info
-#
+# temp_dict = subsetting_script.subject_info(int(subj_pair), 'Amp 2')
+info = mne.create_info(ch_names=my_eeg.info['ch_names'], sfreq=my_eeg.info['sfreq'])
+my_eeg.info
+# %%
+
+
 # temp_dict = subsetting_script.subject_info(int(subj_pair), 'Amp 2')
 # mne.io.meas_info._merge_info(my_eeg.info, temp_dict, verbose = None)
 # help(mne.io.meas_info._merge_info)
-
-# %%
-# subset.info
-# sub2_raw.info
-# print(make_bids_basename.__doc__)
-# help(mne.events_from_annotations)
-#
-# test = raw.info['ch_names'][0:72]
-
 
 # Give the sample rate
 # sfreq = raw.info['sfreq']
