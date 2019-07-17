@@ -102,3 +102,11 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Exclude eeg-files from upload
+*.fif
+*.eeg
+*.vhdr
+*.vmrk
+**/eeg/*.tsv
+**/eeg/*.json

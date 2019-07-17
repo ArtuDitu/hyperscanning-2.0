@@ -129,7 +129,7 @@ if __name__=='__main__':
             write_raw_bids(subset, bids_basename, output_path = mne_dir, event_id = event_id, events_data = events, overwrite = True)
 
             # dir = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0'
-            # print_dir_tree(dir)
+            # print_dir_tree(mne_dir)
             # help(write_raw_bids)
             # %%
 

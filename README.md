@@ -53,7 +53,7 @@ A place to temporarily store eeg-files. Needs to be done during the splitting-pr
 
 [mne_tools by Benedikt Ehinger](https://github.com/behinger/mne_tools "Tools for python MNE Toolbox for EEG data analysis ")
 
-[Paper on BID-structure](https://www.nature.com/articles/sdata201644.pdf "The brain imaging data structure,a format for organizing anddescribing outputs of neuroimagingexperiments")
+[Paper on BID-structure](https://www.nature.com/articles/sdata201644.pdf "The brain imaging data structure, a format for organizing and describing outputs of neuroimaging experiments")
 
 [BIDS Specification](https://bids-specification.readthedocs.io/en/latest/ "View the current state of BIDS-specification")
 
