@@ -2,26 +2,26 @@
 In this directory, you'll find all necessary files to get the project running.
 
 ## Directory tree
-|hyperscanning-2.0 \n
-|--- .gitignore \n
-|--- Preprocessing\_MNE.py \n
-|--- subsetting\_script.py \n
-|--- functions_MNE.py \n
-|--- rename\_brainvision\_files.py \n
-|--- _virtual\_environment\_setup_ \n
-|------ requirements.txt \n
-|------ setup\_readme.md \n
-|------ environment.yml \n
-|--- _load\_CNT_ \n
-|------ load\_CNT.py \n
-|------ read\_antcnt.py \n
-|------ README.md \n
-|------ libeep-3.3.177.zip \n
-|------ load\_CNT\_oldvers.py \n
-|------ read\_antcnt.pyc \n
-|--- _mne\_data_ \n
-|--- _info\_files_ \n
-|--- _temp\_saving\_subsets_ \n
+|hyperscanning-2.0  
+|--- .gitignore  
+|--- Preprocessing\_MNE.py  
+|--- subsetting\_script.py  
+|--- functions_MNE.py  
+|--- rename\_brainvision\_files.py  
+|--- _virtual\_environment\_setup_  
+|------ requirements.txt  
+|------ setup\_readme.md  
+|------ environment.yml  
+|--- _load\_CNT_  
+|------ load\_CNT.py  
+|------ read\_antcnt.py  
+|------ README.md  
+|------ libeep-3.3.177.zip  
+|------ load\_CNT\_oldvers.py  
+|------ read\_antcnt.pyc  
+|--- _mne\_data_  
+|--- _info\_files_  
+|--- _temp\_saving\_subsets_  
 
 ## Detailed description
 1. FOLDER virtual\_environment\_setup:  
