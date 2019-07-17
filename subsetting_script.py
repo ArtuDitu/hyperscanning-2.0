@@ -97,8 +97,8 @@ def sub2(raw, subject):
     eeg_indices = raw.info['ch_names'][0:72]
     # BrainVision file needs specific event-array structure:
     # Therefore delete second column in events-array.
-    # 2nd argument selects the row or column,
-    # 3rd argument defines the axis
+    # 2nd argument selects the row or column (2nd col),
+    # 3rd argument defines the axis (1=column)
     events, _ = mne.events_from_annotations(raw)
     events_formatted = np.delete(np.array(events),1,1)
     # Create and save the brainvision file
@@ -112,6 +112,7 @@ def sub2(raw, subject):
                 scale_data = False)
 
     # Load brainvision data
+    # help(pybv.write_brainvision)
     # print(mne.io.read_raw_brainvision.__doc__)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub2.vhdr', preload = False)
     annot = mne.read_annotations(path_to_sub+'sub2.vmrk')
