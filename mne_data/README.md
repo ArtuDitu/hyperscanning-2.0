@@ -12,48 +12,52 @@ In the current EEG-hyperscanning study, we simultaneuously recorded brain activi
 
 Terminology that will be used in the following:
 
-**Subject-pair (sub)** = human-human pair from which data is being acquired
-**Participant**	= Individual human being (2 participants form a subject-pair)
-**Visit**		= a non-intermittent period in which the participant is at the location the experiment takes place
-**Session (ses)**	= Usually: a non-intermittent period in which the participant is wearing the EEG cap
+**Subject-pair (sub)** = human-human pair from which data is being acquired  
+**Participant**	= Individual human being (2 participants form a subject-pair)  
+**Visit**		= a non-intermittent period in which the participant is at the location the experiment takes place  
+**Session (ses)**	= Usually: a non-intermittent period in which the participant is wearing the EEG cap.
 		  In this case, however, session nr. equals to participant nr. of a subject-pair
-		  (e.g. 'sub-202_ses-01' would refer to participant nr. 1 from subject-pair 202)
-**Run**		= a non-intermittent period in which data for the participant(s) is continuously being acquired
-**Task**		= instructions (and corresponding stimulus material) that is performed by the subject-pair
-**Responses**	= recorded behaviour of the participant(s) in relation to the task and/or stimulus
+		  (e.g. 'sub-202_ses-01' would refer to participant nr. 1 from subject-pair 202)  
+**Run**		= a non-intermittent period in which data for the participant(s) is continuously being acquired  
+**Task**		= instructions (and corresponding stimulus material) that is performed by the subject-pair  
+**Responses**	= recorded behaviour of the participant(s) in relation to the task and/or stimulus  
 
 ### Folder Structure example:
 
-|mne_data  
-|--- participants.tsv  
-|--- participants.json  
-|--- dataset_description.json  
-|--- README  
+|**mne_data**  
+|README.md  
 |sourcedata  
 |--- sub-202  
 |------ eeg  
 |--------- sub-202-task-hyper_eeg.fif  
 |--------- sub-202-task-hyper_eeg-1.fif  
-|sub-202  
-|--- ses-01  
-|------ sub-202_ses-01_scans.tsv  
-|------ eeg  
-|--------- sub-202_ses-01_task-hyper_events.tsv  
-|--------- sub-202_ses-01_task-hyper_eeg.json  
-|--------- sub-202_ses-01_task-hyper_channels.tsv  
-|--------- sub-202_ses-01_task-hyper_eeg.eeg  
-|--------- sub-202_ses-01_task-hyper_eeg.vhdr  
-|--------- sub-202_ses-01_task-hyper_eeg.vmrk  
-|--------- preprocessing  
-|--- ses-02  
-|------ sub-202_ses-02_scans.tsv  
-|------ eeg  
-|--------- sub-202_ses-02_task-hyper_events.tsv  
-|--------- sub-202_ses-02_task-hyper_eeg.json  
-|--------- sub-202_ses-02_task-hyper_channels.tsv  
-|--------- sub-202_ses-02_task-hyper_eeg.eeg  
-|--------- sub-202_ses-02_task-hyper_eeg.vhdr  
-|--------- sub-202_ses-02_task-hyper_eeg.vmrk  
+|rawdata  
+|--- README.md
+|--- participants.tsv  
+|--- participants.json  
+|--- dataset_description.json  
+|--- sub-202  
+|----- ses-01  
+|-------- sub-202_ses-01_scans.tsv  
+|-------- eeg  
+|----------- sub-202_ses-01_task-hyper_events.tsv  
+|----------- sub-202_ses-01_task-hyper_eeg.json  
+|----------- sub-202_ses-01_task-hyper_channels.tsv  
+|----------- sub-202_ses-01_task-hyper_eeg.eeg  
+|----------- sub-202_ses-01_task-hyper_eeg.vhdr  
+|----------- sub-202_ses-01_task-hyper_eeg.vmrk  
+|----- ses-02  
+|-------- sub-202_ses-02_scans.tsv  
+|-------- eeg  
+|----------- sub-202_ses-02_task-hyper_events.tsv  
+|----------- sub-202_ses-02_task-hyper_eeg.json  
+|----------- sub-202_ses-02_task-hyper_channels.tsv  
+|----------- sub-202_ses-02_task-hyper_eeg.eeg  
+|----------- sub-202_ses-02_task-hyper_eeg.vhdr  
+|----------- sub-202_ses-02_task-hyper_eeg.vmrk  
+|derivatives  
+|--- README.md  
+
 
 
 

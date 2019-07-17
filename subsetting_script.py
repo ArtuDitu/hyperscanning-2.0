@@ -7,7 +7,7 @@ import mne
 import numpy as np
 import pandas as pd
 import pybv
-from Preprocessing_MNE import add_info
+from functions_MNE import *
 
 # class Subset:
 #
@@ -17,62 +17,6 @@ from Preprocessing_MNE import add_info
 #     def __repr__(self):
 #         return (self.raw) # 'subset-{} successfully created!'.format(self.raw.info['subject_info'])
 # @classmethod
-
-# Returns a dict with subject-specific information (extracts from spreadsheet_subjects)
-def subject_info(subject, amplifier):
-    # DEBUG-Variables
-    # subject = 202
-    # amplifier = 'Amp 1'
-
-    # READ in subject information
-    info_csv = pd.read_csv('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/spreadsheet_subjects.csv', na_values = ['\\N'], skipinitialspace = True)
-    # Code gender 'male' = 1 and 'female' = 2
-    info_csv = info_csv.replace(to_replace = 'male', value = 1)
-    info_csv = info_csv.replace(to_replace = 'female', value = 2)
-    # Code handness 'right'= 1 and 'left'=2
-    info_csv = info_csv.replace(to_replace = 'right', value = 1)
-    info_csv = info_csv.replace(to_replace = 'left', value = 2)
-    # Handle missing data
-    # %%time
-    for i in range(0, len(info_csv)-1):
-        # for each NaN-value in the amplifier column
-        while pd.isna(info_csv.iloc[i]['Which amplifier?']):
-            # replace the NaN value with respective 'Amplifier'
-            if info_csv.iloc[i]['Screen Nr.'] == 1:
-                info_csv.loc[i, 'Which amplifier?'] = 'Amp 2'
-                break
-            elif info_csv.iloc[i]['Screen Nr.'] == 2:
-                info_csv.loc[i, 'Which amplifier?'] = 'Amp 1'
-                break
-            else:
-                break
-
-    # Select only the row of interest
-    current_sub = info_csv[(info_csv['Which amplifier?'] == amplifier) & (info_csv['Experiment No.'] == subject)]
-    # Extract the values
-    if amplifier == 'Amp 1':
-        his_id = '%s_sub2' %(subject)
-    else:
-        his_id = '%s_sub1' %(subject)
-
-    last_name = current_sub.iloc[0]['Name'].split(' ',maxsplit = 1)[-1]
-    first_name = current_sub.iloc[0]['Name'].split(' ',maxsplit = 1)[0]
-    sex = current_sub.iloc[0]['gender']
-    handness = current_sub.iloc[0]['handness']
-
-    # Create the dictionary with the values
-    subject_dict = dict(
-                    {'id':subject,
-                    'his_id':his_id,
-                    'last_name':last_name,
-                    'first_name':first_name,
-                    'middle_name':None,
-                    'birthday':None,
-                    'sex':sex,
-                    'hand':handness})
-
-    return subject_dict
-
 
 
 # TEST: writing and reading BrainVision file (this file format is widely used)

@@ -22,7 +22,8 @@ from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne.datasets import sample
 from mne_bids.utils import print_dir_tree
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0')
-import subsetting_script
+from subsetting_script import sub2, sub1
+from functions_MNE import *
 import pybv
 
 # set current working directory
@@ -31,46 +32,6 @@ os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourc
 home = os.path.expanduser('~')
 mne_dir = os.path.join(home,'/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/')
 
-# %%
-
-# ADDING ADDITIONAL INFORMATION TO THE .INFO-DICT OF THE EEG-FILE
-# I.e., adding the events from the STIM-channel and creating annotations that
-# will be visible in the raw data (as color-coded triggers with event description)
-def add_info(raw):
-    # CREATE EVENTS
-    # print(mne.find_events.__doc__)
-    try:
-        events = mne.find_events(raw, stim_channel = 'STI 014')
-    except ValueError as err:
-        print("ValueError: {}".format(err))
-        print("--> trying to decrease length of 'shortest_event' from default(2) to 1 sample.")
-        events = mne.find_events(raw, stim_channel = 'STI 014', shortest_event = 1)
-    # raw.info['events'] = events
-
-    # CREATE ANNOTATIONS FROM EVENTS: To visualize the events + event-description in the data
-    # Read in trigger description txt-file and create mapping dict (e.g. trigger 49 = Trial end)
-    mapping = dict()
-    with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
-        #print(file.read())
-        for line in file:
-            temp = line.strip().split('. ')
-            mapping.update({int(temp[0]) : temp[1]})
-
-    # for each trigger-key, map the corresponding trigger definition
-    descriptions = np.asarray([mapping[event_id] for event_id in events[:, 2]])
-    # add annotations to eeg-struct
-    srate = raw.info['sfreq']
-    onsets = events[:,0] / srate
-    durations = np.zeros_like(onsets) # assuming instantaneous events
-    # mne.Annotations input:
-    # 1. supply the onset timestamps of each event (in sec.)
-    # 2. the duration of event (set to 0sec.)
-    # 3. the event description
-    # 4. the onset of first sample
-    annot = mne.Annotations(onsets, durations, descriptions, orig_time = None)
-    raw.set_annotations(annot)
-    # raw.plot(start = 1103, duration = 3)
-    return raw
 
 # %%
 
@@ -90,10 +51,10 @@ if __name__=='__main__':
         raw = add_info(raw)
 
         # SUBSET THE DATA-STRUCT
-        sub2_raw = subsetting_script.sub2(raw, subject)
+        sub2_raw = sub2(raw, subject)
         sub2_raw.info['subject_info']
         sub2_raw.info
-        sub1_raw = subsetting_script.sub1(raw, subject)
+        sub1_raw = sub1(raw, subject)
         sub1_raw.info['subject_info']
         sub1_raw.info
 
@@ -126,7 +87,7 @@ if __name__=='__main__':
             bids_basename = make_bids_basename(subject = subject_id, session = player, task = task)
 
             # CREATE the files for each subject in accordance to BIDS-format
-            write_raw_bids(subset, bids_basename, output_path = mne_dir, event_id = event_id, events_data = events, overwrite = True)
+            write_raw_bids(subset, bids_basename, output_path = mne_dir+'rawdata/', event_id = event_id, events_data = events, overwrite = True)
 
             # dir = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0'
             # print_dir_tree(mne_dir)
@@ -147,29 +108,35 @@ while True:
         print("Subject-pair does not exist, try a different subject-pair.")
 
 # SELECT a participant_nr
+# and specify 'amp' variable --> needed to retrieve subject-specific information
 while True:
     try:
         participant_nr = input("Select participant to work on (either '01' or '02'): ")
         assert participant_nr in ['01', '02']
-        break
     except AssertionError:
         print("You provided a wrong input! \nFor subject 1 type '01' \nFor subject 2 type '02'\n...")
-
+    else:
+        if participant_nr == '01':
+            amp = 'Amp 2'
+        else:
+            amp = 'Amp 1'
+        break
 
 # SELECT the correct file based on user-input
 bids_subname = make_bids_basename(subject = subj_pair, session = participant_nr, task = 'hyper')
-my_eeg, _, _ = read_raw_bids(bids_fname = bids_subname + '_eeg.vhdr', bids_root = mne_dir)
+my_eeg, _, _ = read_raw_bids(bids_fname = bids_subname + '_eeg.vhdr', bids_root = mne_dir+'rawdata/')
 # Alternatively, load via read_raw_brainvision function
-# path_to_eeg = mne_dir+'sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
+# path_to_eeg = mne_dir+'rawdata/sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
 # mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
 
-# temp_dict = subsetting_script.subject_info(int(subj_pair), 'Amp 2')
-info = mne.create_info(ch_names=my_eeg.info['ch_names'], sfreq=my_eeg.info['sfreq'])
-my_eeg.info
+# ADD subject information manually as I did not find a solution to save it via write_raw_bids()
+# make sure to give an int() value into function
+my_eeg.info['subject_info'] = subject_info(int(subj_pair), amp)
+my_eeg.info['subject_info']
 # %%
 
 
-# temp_dict = subsetting_script.subject_info(int(subj_pair), 'Amp 2')
+# temp_dict = subject_info(int(subj_pair), 'Amp 2')
 # mne.io.meas_info._merge_info(my_eeg.info, temp_dict, verbose = None)
 # help(mne.io.meas_info._merge_info)
 

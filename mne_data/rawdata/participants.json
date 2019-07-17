@@ -8,8 +8,8 @@
     },
     "sex": {
         "Levels": {
-            "F": "female",
-            "M": "male"
+            "M": "male",
+            "F": "female"
         },
         "Description": "Biological sex of the participant"
     }
