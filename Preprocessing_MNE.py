@@ -16,7 +16,6 @@ import os, sys
 import pandas as pd
 import numpy as np
 import mne
-# from mne import io
 from datetime import datetime
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne.datasets import sample
@@ -52,11 +51,11 @@ if __name__=='__main__':
 
         # SUBSET THE DATA-STRUCT
         sub2_raw = sub2(raw, subject)
-        sub2_raw.info['subject_info']
-        sub2_raw.info
+        # sub2_raw.info['subject_info']
+        # sub2_raw.info
         sub1_raw = sub1(raw, subject)
-        sub1_raw.info['subject_info']
-        sub1_raw.info
+        # sub1_raw.info['subject_info']
+        # sub1_raw.info
 
         # %%
 
@@ -124,10 +123,15 @@ while True:
 
 # SELECT the correct file based on user-input
 bids_subname = make_bids_basename(subject = subj_pair, session = participant_nr, task = 'hyper')
-my_eeg, _, _ = read_raw_bids(bids_fname = bids_subname + '_eeg.vhdr', bids_root = mne_dir+'rawdata/')
+my_eeg, my_events, my_event_id = read_raw_bids(bids_fname = bids_subname + '_eeg.vhdr', bids_root = mne_dir+'rawdata/')
 # Alternatively, load via read_raw_brainvision function
 # path_to_eeg = mne_dir+'rawdata/sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
 # mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
+
+# help(read_raw_bids)
+# my_event_id
+# my_events = pd.DataFrame(my_events)
+
 
 # ADD subject information manually as I did not find a solution to save it via write_raw_bids()
 # make sure to give an int() value into function

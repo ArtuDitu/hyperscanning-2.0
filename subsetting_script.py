@@ -9,6 +9,7 @@ import pandas as pd
 import pybv
 from functions_MNE import *
 
+# %%
 # class Subset:
 #
 #     def __init__(self, raw):
@@ -56,7 +57,7 @@ def sub2(raw, subject):
                 scale_data = False)
 
     # Load brainvision data
-    # help(pybv.write_brainvision)
+    help(pybv.write_brainvision)
     # print(mne.io.read_raw_brainvision.__doc__)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub2.vhdr', preload = False)
     annot = mne.read_annotations(path_to_sub+'sub2.vmrk')

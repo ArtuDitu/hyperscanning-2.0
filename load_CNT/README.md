@@ -1,4 +1,4 @@
-# mne_tools
+# mne_tools (by behinger)
 Tools for python MNE Toolbox for EEG data analysis
 ## read_antcnt
 The libeep toolbox is from ANT, you can find the source and try to compile yourself [here](https://sourceforge.net/projects/libeep/)
