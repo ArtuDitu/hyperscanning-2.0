@@ -128,10 +128,10 @@ my_eeg, my_events, my_event_id = read_raw_bids(bids_fname = bids_subname + '_eeg
 # path_to_eeg = mne_dir+'rawdata/sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
 # mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
 
-# help(read_raw_bids)
-# my_event_id
-# my_events = pd.DataFrame(my_events)
-
+help(read_raw_bids)
+my_event_id
+my_events = pd.DataFrame(my_events)
+my_eeg.annotations
 
 # ADD subject information manually as I did not find a solution to save it via write_raw_bids()
 # make sure to give an int() value into function

@@ -54,9 +54,10 @@ def sub2(raw, subject):
                 fname_base = 'sub2',
                 folder_out = path_to_sub,
                 events = events_formatted,
-                scale_data = False)
+                resolution=1e-6)
 
     # Load brainvision data
+    help(mne.events_from_annotations)
     help(pybv.write_brainvision)
     # print(mne.io.read_raw_brainvision.__doc__)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub2.vhdr', preload = False)
@@ -99,7 +100,7 @@ def sub1(raw, subject):
                 fname_base = 'sub1',
                 folder_out = path_to_sub,
                 events = events_formatted,
-                scale_data = False)
+                resolution=1e-6)
 
     # Load brainvision data
     # print(mne.io.read_raw_brainvision.__doc__)
