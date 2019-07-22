@@ -110,3 +110,6 @@ venv.bak/
 *.vmrk
 **/eeg/*.tsv
 **/eeg/*.json
+
+# Exclude entire virtual_env folders/files
+virtual_environment_setup/.virtualenvs/
