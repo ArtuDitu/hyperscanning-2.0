@@ -30,7 +30,7 @@ def sub2(raw, subject):
     # raw = mne.io.read_raw_fif(fname = fname, preload = False)
 
     # add event and annotations information to the info struct
-    raw = add_info(raw)
+    # raw = add_info(raw)
 
     # CREATE temporary path to save file
     home = os.path.expanduser('~')
@@ -40,12 +40,21 @@ def sub2(raw, subject):
     raw_data, _ = raw[0:72]
     # raw_data.shape
     eeg_indices = raw.info['ch_names'][0:72]
+    # In 'mapping', specify which events get which ID
+    mapping = dict()
+    with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
+        #print(file.read())
+        for line in file:
+            temp = line.strip().split('. ')
+            mapping.update({temp[1] : int(temp[0])})
+
     # BrainVision file needs specific event-array structure:
     # Therefore delete second column in events-array.
     # 2nd argument selects the row or column (2nd col),
     # 3rd argument defines the axis (1=column)
-    events, _ = mne.events_from_annotations(raw)
+    events, _ = mne.events_from_annotations(raw, event_id = mapping)
     events_formatted = np.delete(np.array(events),1,1)
+
     # Create and save the brainvision file
     pybv.write_brainvision(
                 data = raw_data,
@@ -57,13 +66,13 @@ def sub2(raw, subject):
                 resolution=1e-6)
 
     # Load brainvision data
-    help(mne.events_from_annotations)
-    help(pybv.write_brainvision)
+    # help(mne.events_from_annotations)
+    # help(pybv.write_brainvision)
     # print(mne.io.read_raw_brainvision.__doc__)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub2.vhdr', preload = False)
     annot = mne.read_annotations(path_to_sub+'sub2.vmrk')
     raw_bv.set_annotations(annot)
-    raw_bv.annotations
+    # raw_bv.annotations
     # add subject-specific information to the dict
     raw_bv.info['subject_info'] = subject_info(int(subject), 'Amp 1')
 
@@ -76,7 +85,7 @@ def sub1(raw, subject):
     # raw = mne.io.read_raw_fif(fname = fname, preload = False)
 
     # add event and annotations information to the info struct
-    raw = add_info(raw)
+    # raw = add_info(raw)
 
     # CREATE temporary path to save file
     home = os.path.expanduser('~')
@@ -86,11 +95,18 @@ def sub1(raw, subject):
     raw_data, _ = raw[72:]
     raw_data.shape
     eeg_indices = raw.info['ch_names'][0:72]
+    mapping = dict()
+    with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
+        #print(file.read())
+        for line in file:
+            temp = line.strip().split('. ')
+            mapping.update({temp[1] : int(temp[0])})
+
     # BrainVision file needs specific event-array structure:
     # Therefore delete second column in events-array.
     # 2nd argument selects the row or column,
     # 3rd argument defines the axis
-    events, _ = mne.events_from_annotations(raw)
+    events, _ = mne.events_from_annotations(raw, event_id = mapping)
     events_formatted = np.delete(np.array(events),1,1)
     # Create and save the brainvision file
     pybv.write_brainvision(
@@ -107,7 +123,7 @@ def sub1(raw, subject):
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub1.vhdr', preload = False)
     annot = mne.read_annotations(path_to_sub+'sub1.vmrk')
     raw_bv.set_annotations(annot)
-    raw_bv.annotations
+    # raw_bv.annotations
     # add subject-specific information to the dict
     raw_bv.info['subject_info'] = subject_info(int(subject), 'Amp 2')
 

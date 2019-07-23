@@ -3,14 +3,14 @@
         "Description": "Unique participant identifier"
     },
     "age": {
-        "Description": "Age of the participant at time of testing",
-        "Units": "years"
+        "Units": "years",
+        "Description": "Age of the participant at time of testing"
     },
     "sex": {
-        "Description": "Biological sex of the participant",
         "Levels": {
             "F": "female",
             "M": "male"
-        }
+        },
+        "Description": "Biological sex of the participant"
     }
 }

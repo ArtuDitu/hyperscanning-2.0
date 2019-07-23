@@ -18,6 +18,11 @@ from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 # I.e., adding the events from the STIM-channel and creating annotations that
 # will be visible in the raw data (as color-coded triggers with event description)
 def add_info(raw):
+    # DEBUG-VARIABLES
+    # subject = 203
+    # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject, subject)
+    # raw = mne.io.read_raw_fif(fname = fname, preload = False)
+
     # CREATE EVENTS
     # print(mne.find_events.__doc__)
     try:
@@ -26,7 +31,7 @@ def add_info(raw):
         print("ValueError: {}".format(err))
         print("--> trying to decrease length of 'shortest_event' from default(2) to 1 sample.")
         events = mne.find_events(raw, stim_channel = 'STI 014', shortest_event = 1)
-    # raw.info['events'] = events
+    # raw.info['events'] = events --> This line does not work and gave an error
 
     # CREATE ANNOTATIONS FROM EVENTS: To visualize the events + event-description in the data
     # Read in trigger description txt-file and create mapping dict (e.g. trigger 49 = Trial end)
@@ -49,6 +54,9 @@ def add_info(raw):
     # 3. the event description
     # 4. the onset of first sample
     annot = mne.Annotations(onsets, durations, descriptions, orig_time = None)
+    # for idx, my_annot in enumerate(raw.annotations):  # iterate on the Annotations object
+    #     # print('annot #{0}: onset={1}'.format(idx, my_annot['onset']))
+    #     print('annot #{0}: {1}'.format(idx, my_annot['description']))
     raw.set_annotations(annot)
     # raw.plot(start = 1103, duration = 3)
     return raw

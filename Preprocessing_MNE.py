@@ -78,7 +78,7 @@ if __name__=='__main__':
                 player = '01'
             subject_id = subject
             task = 'hyper'
-            events, event_id = mne.events_from_annotations(subset)
+            events, event_id = mne.events_from_annotations(subset, event_id = None)
 
             # CREATE the correct naming for the file (e.g. 'sub-202_ses-01_task-hyper')
             # Subject 1 and 2 are distinguished via the session argument (ses-01 = subject-01; ses-02 = subject-02),
@@ -90,7 +90,7 @@ if __name__=='__main__':
 
             # dir = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0'
             # print_dir_tree(mne_dir)
-            # help(write_raw_bids)
+            # help(mne.events_from_annotations)
             # %%
 
 ################################################################
@@ -129,7 +129,7 @@ my_eeg, my_events, my_event_id = read_raw_bids(bids_fname = bids_subname + '_eeg
 # mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
 
 help(read_raw_bids)
-my_event_id
+my_event_id.values()
 my_events = pd.DataFrame(my_events)
 my_eeg.annotations
 
