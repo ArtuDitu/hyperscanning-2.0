@@ -33,6 +33,14 @@ def add_info(raw):
         events = mne.find_events(raw, stim_channel = 'STI 014', shortest_event = 1)
     # raw.info['events'] = events --> This line does not work and gave an error
 
+    ####### CHECKBLOCK if event block 12 start/end exist in dataset #######
+    # print(pd.DataFrame(events[:]).to_string())
+    # find = pd.DataFrame(events[:])
+    # # 35 = Block 12 start, 47 = Block 12 end
+    # find[find.isin([48, 49]) == True].index.values
+    # for i in range(len(find)):
+    #     print(find.index.values.astype(int)[i])
+
     # CREATE ANNOTATIONS FROM EVENTS: To visualize the events + event-description in the data
     # Read in trigger description txt-file and create mapping dict (e.g. trigger 49 = Trial end)
     mapping = dict()
