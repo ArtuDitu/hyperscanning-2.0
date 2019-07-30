@@ -13,13 +13,26 @@ import pandas as pd
 import pybv
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 
+# CREATE ANNOTATIONS FROM EVENTS: To visualize the events + event-description in the data
+# Read in trigger description txt-file and create mapping dict (e.g. trigger 49 = Trial end)
+def map_events():
+    mapping = dict()
+    with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
+        #print(file.read())
+        for line in file:
+            temp = line.strip().split('. ')
+            mapping.update({temp[1] : int(temp[0])})
+
+    return mapping
+
+
 
 # ADDING ADDITIONAL INFORMATION TO THE .INFO-DICT OF THE EEG-FILE
 # I.e., adding the events from the STIM-channel and creating annotations that
 # will be visible in the raw data (as color-coded triggers with event description)
 def add_info(raw):
     # DEBUG-VARIABLES
-    # subject = 203
+    # subject = 204
     # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject, subject)
     # raw = mne.io.read_raw_fif(fname = fname, preload = False)
 
@@ -33,22 +46,30 @@ def add_info(raw):
         events = mne.find_events(raw, stim_channel = 'STI 014', shortest_event = 1)
     # raw.info['events'] = events --> This line does not work and gave an error
 
-    ####### CHECKBLOCK if event block 12 start/end exist in dataset #######
+    ####### CHECKBLOCK if event block 12 start/end exist in dataset #########
+    # stim = raw.copy().load_data().pick_types(eeg=False, stim=True)
+    # stim.plot(start=750, duration=1000)
+    # stim.info
     # print(pd.DataFrame(events[:]).to_string())
+    #
     # find = pd.DataFrame(events[:])
-    # # 35 = Block 12 start, 47 = Block 12 end
-    # find[find.isin([48, 49]) == True].index.values
+    # # Check if triggers 35 = Block 12 start, 47 = Block 12 end occur in dataset
+    # # Sol 1
+    # find[find[2].isin([35, 47]) == True]
+    # # Sol 2
     # for i in range(len(find)):
-    #     print(find.index.values.astype(int)[i])
+    #     if find[2][i] == 35 | 47:
+    #         print(find.index.values[i])
+    #         # print(find.index.values.astype(int)[i])
 
-    # CREATE ANNOTATIONS FROM EVENTS: To visualize the events + event-description in the data
-    # Read in trigger description txt-file and create mapping dict (e.g. trigger 49 = Trial end)
+    # Create mapping dictionary of event description key = value pairs
     mapping = dict()
     with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
         #print(file.read())
         for line in file:
             temp = line.strip().split('. ')
-            mapping.update({int(temp[0]) : temp[1]})
+            mapping.update({int(temp[0]):temp[1]})
+
 
     # for each trigger-key, map the corresponding trigger definition
     descriptions = np.asarray([mapping[event_id] for event_id in events[:, 2]])

@@ -42,7 +42,9 @@ if __name__=='__main__':
     # print_dir_tree('/home/student/m/mtiessen/link_hyperscanning/hyperscanning-2.0/mne_data')
 
     # do for each subject
-    for subject in ['204']:
+    for subject in ['202']: # '203', '204'
+        # DEBUG:
+        # subject = '202'
         # LOAD THE MNE-COMPATIBLE RAW DATA-FILE(S)
         fname = mne_dir+'sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject,subject)
         raw = mne.io.read_raw_fif(fname = fname, preload = False)
@@ -57,8 +59,6 @@ if __name__=='__main__':
         # sub1_raw.info['subject_info']
         # sub1_raw.info
 
-        # %%
-
         ######################################################
         # STEP 2: SAVE DATA IN BIDS-FORMAT
         ######################################################
@@ -67,7 +67,7 @@ if __name__=='__main__':
         # automatize process for each sub_file
         for subset in ([sub1_raw, sub2_raw]):
             # DEBUG-Variables
-            # subject = '203'
+            # subject = '202'
             # subset = sub1_raw
             # print(subset)
 
@@ -78,6 +78,8 @@ if __name__=='__main__':
                 player = '01'
             subject_id = subject
             task = 'hyper'
+            # mapping = map_events()
+            # help(mne.events_from_annotations)
             events, event_id = mne.events_from_annotations(subset, event_id = None)
 
             # CREATE the correct naming for the file (e.g. 'sub-202_ses-01_task-hyper')
@@ -128,17 +130,54 @@ my_eeg, my_events, my_event_id = read_raw_bids(bids_fname = bids_subname + '_eeg
 # path_to_eeg = mne_dir+'rawdata/sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
 # mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
 
-help(read_raw_bids)
-my_event_id.values()
-my_events = pd.DataFrame(my_events)
-my_eeg.annotations
-
 # ADD subject information manually as I did not find a solution to save it via write_raw_bids()
 # make sure to give an int() value into function
 my_eeg.info['subject_info'] = subject_info(int(subj_pair), amp)
 my_eeg.info['subject_info']
+
+
+# %%
+# CHECK CONSISTENCY OF TRIGGERS
+# print(mne.Annotations.__doc__)
+
+# for i, descr in enumerate(my_eeg.annotations):
+#     print(i, descr)
+
+inv_map = {v: k for k, v in my_event_id.items()}
+annot = pd.DataFrame(my_eeg.annotations)
+annot.head()
+
+# List occurrence of each event
+print('---- Event description : Occurrence ----\n')
+for i in range(len(inv_map)):
+    # occ2 = len(annot[annot.description == inv_map[i]])
+    occ = annot.description.value_counts()[inv_map[i]]
+    print('{:s}: {:d}'.format(inv_map[i], occ))
+
+
+# SNIPPETS
+# type(annot.description[1])
+# for e in range(mne.Annotations.__len__(my_eeg.annotations)):
+# my_eeg.annotations
+#
+# my_eeg.annotations[1].items()
+# my_eeg.annotations
+
 # %%
 
+
+
+
+
+
+
+
+
+################### TEST ######################
+# help(read_raw_bids)
+# my_event_id.values()
+# my_events = pd.DataFrame(my_events)
+# my_eeg.annotations
 
 # temp_dict = subject_info(int(subj_pair), 'Amp 2')
 # mne.io.meas_info._merge_info(my_eeg.info, temp_dict, verbose = None)
@@ -150,8 +189,6 @@ my_eeg.info['subject_info']
 # eeg, times = raw[0, :int(sfreq * 2)]
 # plt.plot(times, eeg.T)
 
-
-################### TEST ######################
 # Get some information about the eeg structure.
 # display the dictionary of the raw_file
 # print(sub2_raw.info)

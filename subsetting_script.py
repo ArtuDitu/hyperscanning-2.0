@@ -25,12 +25,11 @@ from functions_MNE import *
 # help(pybv.write_brainvision)
 def sub2(raw, subject):
     # DEBUG-VARIABLES
-    # subject = 203
-    # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject, subject)
-    # raw = mne.io.read_raw_fif(fname = fname, preload = False)
+    subject = 204
+    fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject, subject)
+    raw = mne.io.read_raw_fif(fname = fname, preload = False)
+    raw = add_info(raw)
 
-    # add event and annotations information to the info struct
-    # raw = add_info(raw)
 
     # CREATE temporary path to save file
     home = os.path.expanduser('~')
@@ -41,12 +40,7 @@ def sub2(raw, subject):
     # raw_data.shape
     eeg_indices = raw.info['ch_names'][0:72]
     # In 'mapping', specify which events get which ID
-    mapping = dict()
-    with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
-        #print(file.read())
-        for line in file:
-            temp = line.strip().split('. ')
-            mapping.update({temp[1] : int(temp[0])})
+    mapping = map_events()
 
     # BrainVision file needs specific event-array structure:
     # Therefore delete second column in events-array.
@@ -71,6 +65,8 @@ def sub2(raw, subject):
     # print(mne.io.read_raw_brainvision.__doc__)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub2.vhdr', preload = False)
     annot = mne.read_annotations(path_to_sub+'sub2.vmrk')
+    # Delete first entry which is not of interest
+    mne.Annotations.delete(annot, 0)
     raw_bv.set_annotations(annot)
     # raw_bv.annotations
     # add subject-specific information to the dict
@@ -95,12 +91,7 @@ def sub1(raw, subject):
     raw_data, _ = raw[72:]
     raw_data.shape
     eeg_indices = raw.info['ch_names'][0:72]
-    mapping = dict()
-    with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
-        #print(file.read())
-        for line in file:
-            temp = line.strip().split('. ')
-            mapping.update({temp[1] : int(temp[0])})
+    mapping = map_events()
 
     # BrainVision file needs specific event-array structure:
     # Therefore delete second column in events-array.
@@ -120,8 +111,11 @@ def sub1(raw, subject):
 
     # Load brainvision data
     # print(mne.io.read_raw_brainvision.__doc__)
+    help(raw.set_annotations)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub1.vhdr', preload = False)
     annot = mne.read_annotations(path_to_sub+'sub1.vmrk')
+    # Delete first entry which is not of interest
+    mne.Annotations.delete(annot, 0)
     raw_bv.set_annotations(annot)
     # raw_bv.annotations
     # add subject-specific information to the dict
