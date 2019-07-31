@@ -24,6 +24,7 @@ os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0')
 from subsetting_script import sub2, sub1
 from functions_MNE import *
 import pybv
+import pprint
 
 # set current working directory
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata')
@@ -96,8 +97,13 @@ if __name__=='__main__':
             # %%
 
 ################################################################
-# STEP 3: LOAD DATASET TO WORK WITH AND CREATE PREPROCESSING DIR
+# STEP 3: LOAD DATASET TO WORK WITH AND CREATE DERIVATIVES DIR
 ################################################################
+
+# CREATE derivatives folder where preprocessed files will be saved in
+derivatives_folder = os.path.join(mne_dir, 'derivatives/')
+if not os.path.exists(derivatives_folder):
+    os.makedirs(derivatives_folder)
 
 # SELECT a subject-pair
 while True:
@@ -137,22 +143,72 @@ my_eeg.info['subject_info']
 
 
 # %%
-# CHECK CONSISTENCY OF TRIGGERS
+#######################################
+# STEP 4: CHECK CONSISTENCY OF TRIGGERS
+#######################################
 # print(mne.Annotations.__doc__)
+
+# VARIABLES
+events_300 = list(range(4,24,1)) + [48,  49]
+events_1 = list(range(24,47))
+events_6 = [1, 2]
+occ_dict = dict()
+nomatch = []
+unusual = []
+print1 = np.array([])
+# Event ID and description dict
+inv_map = {v: k for k, v in my_event_id.items()}
+# The EEG annotation structure
+annot = pd.DataFrame(my_eeg.annotations) # For better readability casted to pandas Dataframe
+# annot.head(7)
+# inv_map.pop(0)
+# DISPLAY the occurrence of each event and detect the ghost triggers
+for i in range(1,len(inv_map)):
+    # occ2 = len(annot[annot.description == inv_map[i]])
+    occ = annot.description.value_counts()[inv_map[i]]
+    occ_dict.update({inv_map[i] : occ})
+    # Extract the trigger-number from the event description
+    try:
+        str_nmbrs = [int(s) for s in inv_map[i].split('/S')[1].split(' ') if s.isdigit()]
+    except IndexError:
+        print('First event must be wrong: Event = {}\nDelete the entry by using "inv_map.pop(0)", then run loop again...'.format(inv_map[0]))
+        break
+    # Save all trigger occurences != 300 in nomatch list
+    if str_nmbrs[0] in events_300 and occ != 300:
+        nomatch.append(inv_map[i])
+        print1 = np.append(print1, '{:s} = {:d}'.format(inv_map[i], occ))
+    # check for block triggers
+    elif str_nmbrs[0] in events_1 and occ != 1:
+        unusual.append(inv_map[i])
+    # check for green fixation cross triggers
+    elif str_nmbrs[0] in events_6 and occ != 6:
+        unusual.append(inv_map[i])
+    else:
+        continue
+
+# PRINT the outcome
+# print('---- Event description : Occurrence ----\n')
+# pprint.pprint(occ_dict)
+print('\n\n---- Triggers which do not match: ----')
+print(print1)
+print('\n\n---- Events that should be manually inspected: ----\n', unusual)
+# show each of the entries of unusual triggers
+for u in unusual:
+    display(annot[annot.description == u])
+# %%
+
+# LOOP through ghost triggers and find their position
+for g in nomatch:
+    event_subset = annot[annot.description == g]
+
+
+
+save = [key for key, value in occ_dict.items() if key == ]
+
+occ_dict.get(inv_map[i])
 
 # for i, descr in enumerate(my_eeg.annotations):
 #     print(i, descr)
-
-inv_map = {v: k for k, v in my_event_id.items()}
-annot = pd.DataFrame(my_eeg.annotations)
-annot.head()
-
-# List occurrence of each event
-print('---- Event description : Occurrence ----\n')
-for i in range(len(inv_map)):
-    # occ2 = len(annot[annot.description == inv_map[i]])
-    occ = annot.description.value_counts()[inv_map[i]]
-    print('{:s}: {:d}'.format(inv_map[i], occ))
 
 
 # SNIPPETS
