@@ -43,7 +43,7 @@ if __name__=='__main__':
     # print_dir_tree('/home/student/m/mtiessen/link_hyperscanning/hyperscanning-2.0/mne_data')
 
     # do for each subject
-    for subject in ['202']: # '203', '204'
+    for subject in ['202','203', '204']:
         # DEBUG:
         # subject = '202'
         # LOAD THE MNE-COMPATIBLE RAW DATA-FILE(S)
@@ -136,6 +136,10 @@ my_eeg, my_events, my_event_id = read_raw_bids(bids_fname = bids_subname + '_eeg
 # path_to_eeg = mne_dir+'rawdata/sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
 # mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
 
+# Delete the first event in case its the 'New Segment' trigger
+if my_eeg.annotations.description[0] == 'New Segment/':
+    mne.Annotations.delete(my_eeg.annotations, 0)
+
 # ADD subject information manually as I did not find a solution to save it via write_raw_bids()
 # make sure to give an int() value into function
 my_eeg.info['subject_info'] = subject_info(int(subj_pair), amp)
@@ -160,10 +164,12 @@ print1 = np.array([])
 inv_map = {v: k for k, v in my_event_id.items()}
 # The EEG annotation structure
 annot = pd.DataFrame(my_eeg.annotations) # For better readability casted to pandas Dataframe
+
+# my_eeg.annotations[0]
 # annot.head(7)
 # inv_map.pop(0)
 # DISPLAY the occurrence of each event and detect the ghost triggers
-for i in range(1,len(inv_map)):
+for i in range(len(inv_map)):
     # occ2 = len(annot[annot.description == inv_map[i]])
     occ = annot.description.value_counts()[inv_map[i]]
     occ_dict.update({inv_map[i] : occ})
@@ -171,6 +177,7 @@ for i in range(1,len(inv_map)):
     try:
         str_nmbrs = [int(s) for s in inv_map[i].split('/S')[1].split(' ') if s.isdigit()]
     except IndexError:
+        # since I start the loop with i=1 this exception will not occur anymore
         print('First event must be wrong: Event = {}\nDelete the entry by using "inv_map.pop(0)", then run loop again...'.format(inv_map[0]))
         break
     # Save all trigger occurences != 300 in nomatch list
@@ -187,24 +194,41 @@ for i in range(1,len(inv_map)):
         continue
 
 # PRINT the outcome
-# print('---- Event description : Occurrence ----\n')
-# pprint.pprint(occ_dict)
 print('\n\n---- Triggers which do not match: ----')
 print(print1)
-print('\n\n---- Events that should be manually inspected: ----\n', unusual)
+print('\n\n---- Events that should be manually inspected: ----\n')
 # show each of the entries of unusual triggers
 for u in unusual:
+    print(u, '=', annot.description.value_counts()[u])
     display(annot[annot.description == u])
+    print('\n')
 # %%
+
+
+# PRINT whole list of events for manual inspection
+print('---- Event description : Occurrence ----\n')
+pprint.pprint(occ_dict)
 
 # LOOP through ghost triggers and find their position
 for g in nomatch:
-    event_subset = annot[annot.description == g]
+    event_subset = my_eeg.annotations[my_eeg.annotations.description == g]
+    iteration = len(event_subset) - 300
+    for r in range(iteration):
+        onset_min = event_subset.onset[5] - event_subset.onset[0]
+        for s in range(1,len(event_subset)):
+            calc = event_subset.onset[s] - event_subset.onset[s-1]
+            if calc < onset_min:
+                loc_min = s
+                onset_min = calc
+        index_my_eeg = int(annot[annot.onset == event_subset.onset[loc_min]].index.values[0])
+        print('{:s}:\nMinimal distance of {:f} sec found in'.format(g, onset_min))
+        display(annot[index_my_eeg:index_my_eeg+1])
+        print('\n\n')
 
-
+display(annot[index_my_eeg-5:index_my_eeg+5])
+# mne.Annotations.delete(my_eeg.annotations, 0)
 
 save = [key for key, value in occ_dict.items() if key == ]
-
 occ_dict.get(inv_map[i])
 
 # for i, descr in enumerate(my_eeg.annotations):

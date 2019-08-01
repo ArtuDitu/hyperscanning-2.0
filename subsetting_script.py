@@ -76,7 +76,7 @@ def sub2(raw, subject):
 
 def sub1(raw, subject):
     # DEBUG-VARIABLES
-    # subject = 203
+    # subject = 202
     # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject, subject)
     # raw = mne.io.read_raw_fif(fname = fname, preload = False)
 
@@ -111,7 +111,7 @@ def sub1(raw, subject):
 
     # Load brainvision data
     # print(mne.io.read_raw_brainvision.__doc__)
-    help(raw.set_annotations)
+    # help(raw.set_annotations)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub1.vhdr', preload = False)
     annot = mne.read_annotations(path_to_sub+'sub1.vmrk')
     # Delete first entry which is not of interest

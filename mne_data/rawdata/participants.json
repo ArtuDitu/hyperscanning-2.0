@@ -7,10 +7,10 @@
         "Units": "years"
     },
     "sex": {
-        "Description": "Biological sex of the participant",
         "Levels": {
             "F": "female",
             "M": "male"
-        }
+        },
+        "Description": "Biological sex of the participant"
     }
 }
