@@ -25,6 +25,7 @@ from subsetting_script import sub2, sub1
 from functions_MNE import *
 import pybv
 import pprint
+import collections
 
 # set current working directory
 os.chdir('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata')
@@ -68,7 +69,7 @@ if __name__=='__main__':
         # automatize process for each sub_file
         for subset in ([sub1_raw, sub2_raw]):
             # DEBUG-Variables
-            # subject = '202'
+            # subject = '204'
             # subset = sub1_raw
             # print(subset)
 
@@ -79,9 +80,10 @@ if __name__=='__main__':
                 player = '01'
             subject_id = subject
             task = 'hyper'
-            # mapping = map_events()
+
+            mapping = map_vmrk_events()
             # help(mne.events_from_annotations)
-            events, event_id = mne.events_from_annotations(subset, event_id = None)
+            events, event_id = mne.events_from_annotations(subset, event_id = dict(mapping))
 
             # CREATE the correct naming for the file (e.g. 'sub-202_ses-01_task-hyper')
             # Subject 1 and 2 are distinguished via the session argument (ses-01 = subject-01; ses-02 = subject-02),
@@ -132,13 +134,15 @@ while True:
 # SELECT the correct file based on user-input
 bids_subname = make_bids_basename(subject = subj_pair, session = participant_nr, task = 'hyper')
 my_eeg, my_events, my_event_id = read_raw_bids(bids_fname = bids_subname + '_eeg.vhdr', bids_root = mne_dir+'rawdata/')
-# Alternatively, load via read_raw_brainvision function
-# path_to_eeg = mne_dir+'rawdata/sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
-# mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
 
-# Delete the first event in case its the 'New Segment' trigger
-if my_eeg.annotations.description[0] == 'New Segment/':
-    mne.Annotations.delete(my_eeg.annotations, 0)
+# Correct trigger - ID mapping is like this:
+# mapping = map_vmrk_events()
+# my_events, my_event_id = mne.events_from_annotations(my_eeg, event_id = mapping)
+
+# Alternative way of loading data via read_raw_brainvision function
+# help(mne.io.read_raw_brainvision)
+# path_to_eeg = mne_dir+'rawdata/sub-{}/ses-{}/eeg/'.format(subj_pair, participant_nr)
+# my_eeg = mne.io.read_raw_brainvision(vhdr_fname = path_to_eeg + bids_subname + '_eeg.vhdr', preload = False)
 
 # ADD subject information manually as I did not find a solution to save it via write_raw_bids()
 # make sure to give an int() value into function
@@ -150,45 +154,47 @@ my_eeg.info['subject_info']
 #######################################
 # STEP 4: CHECK CONSISTENCY OF TRIGGERS
 #######################################
-# print(mne.Annotations.__doc__)
+
+# Delete the first event in case of the 'New Segment' trigger
+unwanted = 'New Segment/'
+if my_eeg.annotations.description[0] == unwanted:
+    mne.Annotations.delete(my_eeg.annotations, 0)
+# Delete the unwanted entry also from the event_id dict
+if unwanted in my_event_id:
+    del my_event_id[unwanted]
 
 # VARIABLES
-events_300 = list(range(4,24,1)) + [48,  49]
-events_1 = list(range(24,47))
-events_6 = [1, 2]
-occ_dict = dict()
-nomatch = []
-unusual = []
-print1 = np.array([])
 # Event ID and description dict
 inv_map = {v: k for k, v in my_event_id.items()}
 # The EEG annotation structure
 annot = pd.DataFrame(my_eeg.annotations) # For better readability casted to pandas Dataframe
+events_300 = list(range(4,24,1)) + [48,  49]
+events_1 = list(range(24,47)) + [1, 2]
+# %%
+occ_dict = dict()
+nomatch = []
+unusual = []
+print1 = np.array([])
 
-# my_eeg.annotations[0]
-# annot.head(7)
-# inv_map.pop(0)
+
 # DISPLAY the occurrence of each event and detect the ghost triggers
 for i in range(len(inv_map)):
-    # occ2 = len(annot[annot.description == inv_map[i]])
-    occ = annot.description.value_counts()[inv_map[i]]
+    occ = len(my_eeg.annotations[my_eeg.annotations.description == inv_map[i]])
+    # occ = annot.description.value_counts()[inv_map[i]]
     occ_dict.update({inv_map[i] : occ})
     # Extract the trigger-number from the event description
     try:
         str_nmbrs = [int(s) for s in inv_map[i].split('/S')[1].split(' ') if s.isdigit()]
     except IndexError:
-        # since I start the loop with i=1 this exception will not occur anymore
+        # since I delete this entry in the previous step, this exception will not occur anymore
         print('First event must be wrong: Event = {}\nDelete the entry by using "inv_map.pop(0)", then run loop again...'.format(inv_map[0]))
         break
     # Save all trigger occurences != 300 in nomatch list
     if str_nmbrs[0] in events_300 and occ != 300:
         nomatch.append(inv_map[i])
         print1 = np.append(print1, '{:s} = {:d}'.format(inv_map[i], occ))
-    # check for block triggers
+    # check for block triggers & green fixation cross triggers
     elif str_nmbrs[0] in events_1 and occ != 1:
-        unusual.append(inv_map[i])
-    # check for green fixation cross triggers
-    elif str_nmbrs[0] in events_6 and occ != 6:
         unusual.append(inv_map[i])
     else:
         continue
@@ -203,48 +209,46 @@ for u in unusual:
     display(annot[annot.description == u])
     print('\n')
 # %%
-
-
 # PRINT whole list of events for manual inspection
 print('---- Event description : Occurrence ----\n')
 pprint.pprint(occ_dict)
-
-# LOOP through ghost triggers and find their position
-for g in nomatch:
-    event_subset = my_eeg.annotations[my_eeg.annotations.description == g]
-    iteration = len(event_subset) - 300
-    for r in range(iteration):
-        onset_min = event_subset.onset[5] - event_subset.onset[0]
-        for s in range(1,len(event_subset)):
-            calc = event_subset.onset[s] - event_subset.onset[s-1]
-            if calc < onset_min:
-                loc_min = s
-                onset_min = calc
-        index_my_eeg = int(annot[annot.onset == event_subset.onset[loc_min]].index.values[0])
-        print('{:s}:\nMinimal distance of {:f} sec found in'.format(g, onset_min))
-        display(annot[index_my_eeg:index_my_eeg+1])
-        print('\n\n')
-
-display(annot[index_my_eeg-5:index_my_eeg+5])
-# mne.Annotations.delete(my_eeg.annotations, 0)
-
-save = [key for key, value in occ_dict.items() if key == ]
-occ_dict.get(inv_map[i])
-
-# for i, descr in enumerate(my_eeg.annotations):
-#     print(i, descr)
-
-
-# SNIPPETS
-# type(annot.description[1])
-# for e in range(mne.Annotations.__len__(my_eeg.annotations)):
-# my_eeg.annotations
-#
-# my_eeg.annotations[1].items()
-# my_eeg.annotations
-
 # %%
 
+# LOOP through ghost triggers and find their position
+if nomatch == []:
+    print('Nothing to remove! There seem to be no ghost-triggers apparent in the data!')
+else:
+    for g in nomatch:
+        event_subset = my_eeg.annotations[my_eeg.annotations.description == g]
+        iteration = len(event_subset) - 300
+        for r in range(iteration):
+            onset_min = event_subset.onset[5] - event_subset.onset[0]
+            for s in range(1,len(event_subset)):
+                calc = event_subset.onset[s] - event_subset.onset[s-1]
+                if calc < onset_min:
+                    loc_min = s
+                    onset_min = calc
+            # Find the index of the trigger in whole dataset by matching the onset-time
+            index_my_eeg = int(annot[annot.onset == event_subset.onset[loc_min]].index.values[0])
+            print('{:s}:\nMinimal distance of {:f} sec found in'.format(g, onset_min))
+            display(annot[index_my_eeg:index_my_eeg+1])
+            print('\n\n')
+
+            # Delete the entry in pandas Dataframe
+            annot = annot.drop(index_my_eeg)
+            annot.reset_index(drop = True, inplace = True)
+            # Delete the entry in the actual Annotations structure of my_eeg
+            mne.Annotations.delete(my_eeg.annotations, index_my_eeg)
+
+    print('Done. Ghost events have been removed!')
+
+# CHECK the data structure to assure it worked
+# my_eeg.annotations[index_my_eeg]
+# display(annot[index_my_eeg-5:index_my_eeg+5])
+# len(annot)
+# %%
+
+#### NEXT: Filtering, Resampling ############
 
 
 
@@ -254,6 +258,14 @@ occ_dict.get(inv_map[i])
 
 
 ################### TEST ######################
+
+# ###### CREATE OrderedDict object #######
+# ordered_keys = list(range(1,48))
+# inv_map = {v: k for k, v in my_event_id.items()}
+# list_tuples = [(key, inv_map[key]) for key in ordered_keys]
+# ordered_dict = collections.OrderedDict(list_tuples)
+# ordered_dict[3]
+
 # help(read_raw_bids)
 # my_event_id.values()
 # my_events = pd.DataFrame(my_events)

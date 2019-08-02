@@ -11,12 +11,14 @@ import mne
 import numpy as np
 import pandas as pd
 import pybv
+import collections
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
+
 
 # CREATE ANNOTATIONS FROM EVENTS: To visualize the events + event-description in the data
 # Read in trigger description txt-file and create mapping dict (e.g. trigger 49 = Trial end)
 def map_events():
-    mapping = dict()
+    mapping = collections.OrderedDict()
     with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
         #print(file.read())
         for line in file:
@@ -25,7 +27,23 @@ def map_events():
 
     return mapping
 
+# CREATE a mapping structure which equals the one from .vmrk file
+# have a look at the package 'pybv', file 'io.py' line 132
+def map_vmrk_events():
+    # call map_events function which is the basis
+    vmrk_mapping = map_events()
+    # invert the dictionnary
+    inv_mapping = collections.OrderedDict({v: k for k,v in vmrk_mapping.items()})
+    # Find the biggest event_ID and define the width for numbers
+    twidth = int(np.ceil(np.log10(max(inv_mapping.keys()))))
+    # Naming convention taken from pybv --> io.py
+    tformat = 'Stimulus/S{:>' + str(twidth) + '}'
+    for e in inv_mapping.keys():
+        # this creates a new entry in mapping with the desired key-name,
+        # while returning the matching value and deleting the old entry with pop()
+        vmrk_mapping[tformat.format(e)+' '+inv_mapping[e]] = vmrk_mapping.pop(inv_mapping[e])
 
+    return vmrk_mapping
 
 # ADDING ADDITIONAL INFORMATION TO THE .INFO-DICT OF THE EEG-FILE
 # I.e., adding the events from the STIM-channel and creating annotations that
@@ -63,13 +81,9 @@ def add_info(raw):
     #         # print(find.index.values.astype(int)[i])
 
     # Create mapping dictionary of event description key = value pairs
-    mapping = dict()
-    with open('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/info_files/triggers_events_markers.txt', mode = 'r', encoding = 'utf-8-sig') as file:
-        #print(file.read())
-        for line in file:
-            temp = line.strip().split('. ')
-            mapping.update({int(temp[0]):temp[1]})
-
+    mapping = map_events()
+    # invert the dict
+    mapping = {v: k for k, v in mapping.items()}
 
     # for each trigger-key, map the corresponding trigger definition
     descriptions = np.asarray([mapping[event_id] for event_id in events[:, 2]])

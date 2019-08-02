@@ -25,11 +25,10 @@ from functions_MNE import *
 # help(pybv.write_brainvision)
 def sub2(raw, subject):
     # DEBUG-VARIABLES
-    subject = 204
-    fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject, subject)
-    raw = mne.io.read_raw_fif(fname = fname, preload = False)
-    raw = add_info(raw)
-
+    # subject = 204
+    # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject, subject)
+    # raw = mne.io.read_raw_fif(fname = fname, preload = False)
+    # raw = add_info(raw)
 
     # CREATE temporary path to save file
     home = os.path.expanduser('~')
@@ -64,11 +63,10 @@ def sub2(raw, subject):
     # help(pybv.write_brainvision)
     # print(mne.io.read_raw_brainvision.__doc__)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub2.vhdr', preload = False)
-    annot = mne.read_annotations(path_to_sub+'sub2.vmrk')
-    # Delete first entry which is not of interest
-    mne.Annotations.delete(annot, 0)
-    raw_bv.set_annotations(annot)
-    # raw_bv.annotations
+    # annot = mne.read_annotations(path_to_sub+'sub2.vmrk')
+    # # Delete first entry which is not of interest
+    # mne.Annotations.delete(annot, 0)
+    # raw_bv.set_annotations(annot)
     # add subject-specific information to the dict
     raw_bv.info['subject_info'] = subject_info(int(subject), 'Amp 1')
 
@@ -79,9 +77,8 @@ def sub1(raw, subject):
     # subject = 202
     # fname = '/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/mne_data/sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject, subject)
     # raw = mne.io.read_raw_fif(fname = fname, preload = False)
-
-    # add event and annotations information to the info struct
     # raw = add_info(raw)
+
 
     # CREATE temporary path to save file
     home = os.path.expanduser('~')
@@ -89,7 +86,7 @@ def sub1(raw, subject):
     path_to_sub = hyper_dir+'temp_saving_subsets/'
 
     raw_data, _ = raw[72:]
-    raw_data.shape
+    # raw_data.shape
     eeg_indices = raw.info['ch_names'][0:72]
     mapping = map_events()
 
@@ -113,11 +110,10 @@ def sub1(raw, subject):
     # print(mne.io.read_raw_brainvision.__doc__)
     # help(raw.set_annotations)
     raw_bv = mne.io.read_raw_brainvision(vhdr_fname = path_to_sub+'sub1.vhdr', preload = False)
-    annot = mne.read_annotations(path_to_sub+'sub1.vmrk')
-    # Delete first entry which is not of interest
-    mne.Annotations.delete(annot, 0)
-    raw_bv.set_annotations(annot)
-    # raw_bv.annotations
+    # annot = mne.read_annotations(path_to_sub+'sub1.vmrk')
+    # # Delete first entry which is not of interest
+    # mne.Annotations.delete(annot, 0)
+    # raw_bv.set_annotations(annot)
     # add subject-specific information to the dict
     raw_bv.info['subject_info'] = subject_info(int(subject), 'Amp 2')
 

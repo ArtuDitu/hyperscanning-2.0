@@ -31,3 +31,5 @@ For the "load_cnt" environment (used to convert original .cnt to mne-compatible 
 - conda env create -f environment.yml -n <env_name>
 
 
+## Additional:
+I customized the script of the pybv package such that .vmrk event-files will include the event description (e.g. 'Stimulus/S 6 Player 1 press 1' instead of only 'Stimulus/S 6'). Therefore I changed the **io.py** file in the **pybv** package (path: _/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/virtual\_environment\_setup/.virtualenvs/hyper-2.0\_env/lib/python3.5/site-packages/pybv_). Just replace the pybv's io-file with the one you can find in this folder.
