@@ -249,13 +249,29 @@ print('Done. Ghost events have been removed!')
 # len(annot)
 # %%
 
-#### NEXT: Filtering, Resampling ############
+#############################################
+# Step 5: Filtering, Resampling, Rereferencing
+#############################################
 
+# APPLY specific NBP channel settings (taken from behinger)
+my_eeg.set_channel_types({ch:'misc' for ch in my_eeg.ch_names if (ch.find('AUX')==0) | (ch.find('BIP')==0)})
 
+# RE-REFERENCE DATA
+# my_eeg.info
+# my_eeg.ch_names
+# help(raw.set_eeg_reference)
+my_eeg.load_data()
+my_eeg.set_eeg_reference(ref_channels='average', projection=False)
 
+# DOWNSAMPLING
+my_eeg.resample(512, npad='auto')
 
+# HIGH-PASS FILTER
+my_eeg.filter(.1, None, fir_design='firwin')
 
-
+# LOW-PASS FILTER
+# help(raw.filter)
+my_eeg.filter(None, 100., fir_design='firwin')
 
 
 ################### TEST ######################
