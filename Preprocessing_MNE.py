@@ -44,11 +44,11 @@ if __name__=='__main__':
     # print_dir_tree('/home/student/m/mtiessen/link_hyperscanning/hyperscanning-2.0/mne_data')
 
     # do for each subject
-    for subject in ['202','203', '204']:
+    for subject in ['202','203','204','205','206','207','208','209','211','212']:
         # DEBUG:
         # subject = '202'
         # LOAD THE MNE-COMPATIBLE RAW DATA-FILE(S)
-        fname = mne_dir+'sourcedata/sub-{}/eeg/sub-{}-task-hyper_eeg.fif'.format(subject,subject)
+        fname = mne_dir+'sourcedata/sub-{}/eeg/sub-{}_task-hyper_eeg.fif'.format(subject,subject)
         raw = mne.io.read_raw_fif(fname = fname, preload = False)
         # add additional information to the data-struct
         raw = add_info(raw)
@@ -233,18 +233,19 @@ else:
             print('{:s}:\nMinimal distance of {:f} sec found in'.format(g, onset_min))
             display(annot[index_my_eeg:index_my_eeg+1])
             print('\n\n')
-
             # Delete the entry in pandas Dataframe
             annot = annot.drop(index_my_eeg)
             annot.reset_index(drop = True, inplace = True)
             # Delete the entry in the actual Annotations structure of my_eeg
             mne.Annotations.delete(my_eeg.annotations, index_my_eeg)
+            # Delete the entry in event_subset in case there are several iterations
+            mne.Annotations.delete(event_subset, loc_min)
 
-    print('Done. Ghost events have been removed!')
+print('Done. Ghost events have been removed!')
 
 # CHECK the data structure to assure it worked
 # my_eeg.annotations[index_my_eeg]
-# display(annot[index_my_eeg-5:index_my_eeg+5])
+# display(annot[index_my_eeg-8:index_my_eeg+5])
 # len(annot)
 # %%
 

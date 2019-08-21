@@ -1,7 +1,7 @@
-# mne_tools (by behinger)
+# mne_tools (by behinger; with adjustments by mtiessen**)
 Tools for python MNE Toolbox for EEG data analysis
 ## read_antcnt
-The libeep toolbox is from ANT, you can find the source and try to compile yourself [here](https://sourceforge.net/projects/libeep/)
+The libeep toolbox is from ANT, you can find the source and try to compile yourself [here](https://sourceforge.net/projects/libeep/), *or use the precompiled folder "libeep" that can be found in this directory.
 ### Install
 - Install MNE-toolbox
 - Copy the content of libeep into the .?/python2.7/site-packages/libeep/ folder
@@ -9,9 +9,9 @@ The libeep toolbox is from ANT, you can find the source and try to compile yours
 
 ### How-To:
 ``` python
-import read_antcnt
-raw = read_antcnt.read_raw_antcnt('filename.cnt')
-raw.save('filename.fif', overwrite=False)
+*import read_antcnt
+*raw = read_antcnt.read_raw_antcnt('filename.cnt')
+*raw.save('filename.fif', overwrite=False)
 ```
 ### Custom NBP-Things
 In order to set the AUX/BIP channels as 'misc' use the following code:

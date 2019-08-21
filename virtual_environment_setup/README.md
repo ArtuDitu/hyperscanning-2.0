@@ -2,7 +2,7 @@
 
 
 ## 1. Use the virtualenvs from store folder
-In order to use the already isntalled virtual environments from this folder, one has to:  
+In order to use the already installed virtual environments from this folder, one has to:  
 #### A. Execute a few commands from terminal:  
 - pip install virtualenvwrapper
 - ln -s /net/store/nbp/projects/hyperscanning ~  (create link to the hyperscanning project in local home folder)
@@ -29,6 +29,11 @@ For the "load_cnt" environment (used to convert original .cnt to mne-compatible 
 
 #### B. Using Anaconda venv (environment.yml):
 - conda env create -f environment.yml -n <env_name>
+
+
+## How to use virtualenvwrapper once it is installed
+workon <env_name>	= will initiate the virtual environment
+deactivate		= will deactivate the virtual environment
 
 
 ## Additional:

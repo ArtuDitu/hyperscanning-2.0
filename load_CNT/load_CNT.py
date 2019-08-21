@@ -16,6 +16,7 @@ import os, sys
 # make sure "read_antcnt.py" is in your pythonpath
 home = os.path.expanduser('~')
 sys.path.append('/net/store/nbp/projects/hyperscanning/hyperscanning-2.0/load_CNT/')
+os.chdir(home + '/hyperscanning/hyperscanning-2.0/load_CNT/')
 # print(sys.path)
 import libeep
 import numpy as np
