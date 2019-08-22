@@ -48,6 +48,12 @@ Main folder which stores all the source-data, raw-data and preprocessed-data in 
 6. FOLDER temp\_saving\_subsets:  
 A place to temporarily store eeg-files. Needs to be done during the splitting-process.
 
+
+## ToDo
+<span style="color:red">some 
+- Didn't find a way to extract event-triggers for block 12 start/end (event-id 35 and 47). Have a look at mne.find_events(), that's what I used to extract the events from the eeg-struct.
+text</span>
+
 ## Interesting links
 [MNE Website](https://mne-tools.github.io/dev/index.html)
 

@@ -32,8 +32,8 @@ For the "load_cnt" environment (used to convert original .cnt to mne-compatible 
 
 
 ## How to use virtualenvwrapper once it is installed
-workon <env_name>	= will initiate the virtual environment
-deactivate		= will deactivate the virtual environment
+workon <env_name>	= will initiate the virtual environment  
+deactivate		= will deactivate the virtual environment  
 
 
 ## Additional:

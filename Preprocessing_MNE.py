@@ -270,7 +270,7 @@ my_eeg.resample(512, npad='auto')
 my_eeg.filter(.1, None, fir_design='firwin')
 
 # LOW-PASS FILTER
-# help(raw.filter)
+# help(my_eeg.filter)
 my_eeg.filter(None, 100., fir_design='firwin')
 
 
