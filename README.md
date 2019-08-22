@@ -50,9 +50,7 @@ A place to temporarily store eeg-files. Needs to be done during the splitting-pr
 
 
 ## ToDo
-<span style="color:red">some 
-- Didn't find a way to extract event-triggers for block 12 start/end (event-id 35 and 47). Have a look at mne.find_events(), that's what I used to extract the events from the eeg-struct.
-text</span>
+<span style="color:red"> - Didn't find a way to extract event-triggers for block 12 start/end (event-id 35 and 47). Have a look at mne.find_events(), that's what I used to extract the events from the eeg-struct.</span>
 
 ## Interesting links
 [MNE Website](https://mne-tools.github.io/dev/index.html)
